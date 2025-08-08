@@ -244,21 +244,7 @@
                 <p><strong>အဆောင်:</strong> <span id="modal-student-hostel" class="text-purple-700 font-medium"></span></p>
             </div>
             
-            <h3 class="text-2xl font-bold text-purple-800 mb-4">အမှတ်စာရင်း</h3>
-            <div class="bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
-                <canvas id="marksChart"></canvas>
-            </div>
-            
-            <table class="min-w-full leading-normal text-sm md:text-base border-collapse border border-gray-200 rounded-lg overflow-hidden">
-                <thead>
-                    <tr class="table-header text-center">
-                        <th class="px-5 py-3 border-b-2 border-gray-200">ရက်စွဲ</th>
-                        <th class="px-5 py-3 border-b-2 border-gray-200">အမှတ်</th>
-                    </tr>
-                </thead>
-                <tbody id="modal-marks-table-body" class="bg-white">
-                </tbody>
-            </table>
+            <!-- Marks section (h3, canvas, table) removed here -->
         </div>
     </div>
 
@@ -293,7 +279,7 @@
             // Data storage and state variables
             let students = []; // All student data (combined from all CSVs)
             let filteredStudents = []; // Students after applying filters/search
-            let markHeaders = []; // Headers representing marks/dates from CSV (will be from the first CSV found)
+            // let markHeaders = []; // Removed: No longer needed as mark columns are not used
 
             // Pagination variables
             const rowsPerPage = 20; // Changed from 10 to 20
@@ -304,7 +290,7 @@
             let currentSortColumn = null;
             let currentSortDirection = 'asc'; // 'asc' for ascending, 'desc' for descending
 
-            let marksChartInstance = null; // Chart.js instance for the modal chart
+            // let marksChartInstance = null; // Removed: No longer needed as marks chart is removed
 
             /**
              * Converts Arabic numerals to Burmese numerals.
@@ -322,22 +308,21 @@
             /**
              * Parses the raw CSV string into an array of student objects.
              * It assumes the first row is headers and subsequent rows are data.
-             * It identifies mark headers based on a date format (DD.MM.YYYY).
              * Only adds valid student records (those with a non-empty name).
              * @param {string} csv - The raw CSV content.
-             * @param {boolean} isFirstFile - True if this is the first CSV file being parsed (for markHeaders).
+             * @param {boolean} isFirstFile - True if this is the first CSV file being parsed (no longer directly used for markHeaders logic).
              * @returns {Array<Object>} An array of student objects.
              */
-            function parseCSV(csv, isFirstFile = false) {
+            function parseCSV(csv, isFirstFile = false) { // isFirstFile parameter can be removed if not used anywhere else
                 const lines = csv.split('\n').filter(line => line.trim() !== ''); // Split by line and remove completely empty lines
                 if (lines.length === 0) return [];
 
                 const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, '')); // Parse headers
                 
-                // Only set markHeaders from the first CSV file to ensure consistency in chart/modal
-                if (isFirstFile) {
-                    markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h)); // Find headers that are dates
-                }
+                // markHeaders logic removed as marks section is no longer in use
+                // if (isFirstFile) {
+                //     markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h));
+                // }
 
                 const data = [];
                 // Start from line 1 (skip headers) for all files
@@ -638,7 +623,8 @@
             }
             
             /**
-             * Displays the modal with a student's detailed information and a chart of their marks.
+             * Displays the modal with a student's detailed information.
+             * Marks section is removed as per user request.
              * @param {Object} student - The student object to display.
              */
             function showStudentModal(student) {
@@ -648,102 +634,9 @@
                 document.getElementById('modal-student-city').textContent = student.မြို့ || 'မရှိပါ';
                 document.getElementById('modal-student-hostel').textContent = student.အဆောင် || 'မရှိပါ';
 
-                // Populate marks table and prepare data for chart
-                const marksBody = document.getElementById('modal-marks-table-body');
-                marksBody.innerHTML = ''; // Clear previous marks
-                const marksData = [];
-                const labels = [];
-
-                // Sort markHeaders to display marks in chronological order
-                const sortedMarkHeaders = [...markHeaders].sort((a, b) => {
-                    // Convert "DD.MM.YYYY" to a sortable date format
-                    const [dayA, monthA, yearA] = a.split('.').map(Number);
-                    const [dayB, monthB, yearB] = b.split('.').map(Number);
-                    const dateA = new Date(yearA, monthA - 1, dayA);
-                    const dateB = new Date(yearB, monthB - 1, dayB);
-                    return dateA - dateB;
-                });
-
-                sortedMarkHeaders.forEach(header => {
-                    const mark = student[header];
-                    if (mark && !isNaN(parseInt(mark, 10))) { // Ensure mark is a valid number
-                        const row = document.createElement('tr');
-                        row.classList.add('table-row');
-                        row.innerHTML = `
-                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${header}</td>
-                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(parseInt(mark, 10))}</td>
-                        `;
-                        marksBody.appendChild(row);
-                        marksData.push(parseInt(mark, 10));
-                        labels.push(header);
-                    }
-                });
-
-                // Render or update Chart.js chart
-                const ctx = document.getElementById('marksChart').getContext('2d');
-                if (marksChartInstance) {
-                    marksChartInstance.destroy(); // Destroy existing chart instance
-                }
-                marksChartInstance = new Chart(ctx, {
-                    type: 'bar', // Bar chart for marks
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'ရရှိသော အမှတ်',
-                            data: marksData,
-                            backgroundColor: 'rgba(168, 85, 247, 0.7)', // Slightly more opaque purple
-                            borderColor: '#a855f7',
-                            borderWidth: 1,
-                            borderRadius: 8, // More rounded bars
-                            hoverBackgroundColor: 'rgba(168, 85, 247, 0.9)' // Darker on hover
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false, // Allows chart to resize freely
-                        plugins: {
-                            legend: {
-                                display: false // No need for legend on this chart
-                            },
-                            tooltip: {
-                                backgroundColor: '#4c1d95', // Darker tooltip background
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                borderRadius: 6,
-                                padding: 10
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100, // Assuming marks are out of 100
-                                ticks: {
-                                    color: '#4c1d95', // Purple tick labels
-                                    font: {
-                                        size: 12
-                                    },
-                                    callback: function(value) {
-                                        return convertToBurmeseNumerals(value); // Convert Y-axis ticks to Burmese
-                                    }
-                                },
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)' // Lighter grid lines
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#4c1d95',
-                                    font: {
-                                        size: 12
-                                    }
-                                },
-                                grid: {
-                                    display: false // No vertical grid lines
-                                }
-                            }
-                        }
-                    }
-                });
+                // Marks-related populate logic, chart, and table removal:
+                // The sections for marks are entirely removed from the modal HTML above.
+                // Therefore, no JavaScript code is needed here to handle marks data or chart.
 
                 // Show the modal
                 studentModal.style.display = 'block';
@@ -785,7 +678,7 @@
                             continue; // Skip to next file if one fails to load
                         }
                         const data = await response.text();
-                        const parsedData = parseCSV(data, i === 0); // Pass true for the first file to set markHeaders
+                        const parsedData = parseCSV(data, i === 0); // isFirstFile parameter still passed but its internal usage for markHeaders is removed
                         students = students.concat(parsedData); // Concatenate data from each file
                     }
                     
@@ -793,7 +686,7 @@
                     populateAllFilters(students); // Initial population of all filters
 
                     // Update total student count
-                    totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော််အရေအတွက်( ${convertToBurmeseNumerals(students.length)} ) ရှိပါသည်။`;
+                    totalStudentCountElement.textContent = `စုစုပေါင်း ကျောင်းသား ( ${convertToBurmeseNumerals(students.length)} ) ရှိပါသည်။`;
 
                     filterStudents(); // Apply filters and render table with combined data
 
@@ -823,7 +716,8 @@
             copyPageButton.addEventListener('click', () => {
                 // Create a temporary textarea to hold the content
                 const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = mainContainer.outerHTML; // Get the full HTML of the main container
+                // We'll copy the text content of the main container, not its HTML to avoid copying styling
+                tempTextArea.value = mainContainer.innerText; 
                 document.body.appendChild(tempTextArea);
                 tempTextArea.select();
                 try {
@@ -854,4 +748,3 @@
 
 </body>
 </html>
-
