@@ -670,15 +670,17 @@
                 try {
                     for (let i = 0; i < csvFilePaths.length; i++) {
                         const filePath = csvFilePaths[i];
-                        console.log(`Attempting to fetch CSV file: ${filePath}`); // Debugging: log which file is being fetched
-                        const response = await fetch(filePath);
+                        // Construct absolute URL for fetch
+                        const absoluteFilePath = new URL(filePath, window.location.href).href;
+                        console.log(`Attempting to fetch CSV file: ${absoluteFilePath}`); // Debugging: log which file is being fetched
+                        const response = await fetch(absoluteFilePath);
                         if (!response.ok) {
-                            console.warn(`Warning: Failed to fetch CSV file: ${filePath}. Status: ${response.statusText} (${response.status}). Skipping this file.`);
+                            console.warn(`Warning: Failed to fetch CSV file: ${absoluteFilePath}. Status: ${response.statusText} (${response.status}). Skipping this file.`);
                             continue; // Skip to next file if one fails to load
                         }
                         const data = await response.text();
-                        console.log(`Successfully fetched ${filePath}. Data length: ${data.length}`); // Debugging: log success
-                        const parsedData = parseCSV(data); // isFirstFile parameter removed as its internal usage is gone
+                        console.log(`Successfully fetched ${absoluteFilePath}. Data length: ${data.length}`); // Debugging: log success
+                        const parsedData = parseCSV(data);
                         students = students.concat(parsedData); // Concatenate data from each file
                     }
                     
