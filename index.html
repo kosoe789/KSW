@@ -134,18 +134,37 @@
 
         /* Live Scrolling Text Styles */
         @keyframes marquee {
-            0% { transform: translateX(100%); } /* Start from right off-screen */
-            100% { transform: translateX(-100%); } /* Move to left off-screen */
+            0% { transform: translateX(-100%); } /* Start completely off-screen left */
+            100% { transform: translateX(100%); } /* Move to completely off-screen right */
         }
         .animate-marquee {
             animation: marquee 15s linear infinite; /* Adjust duration as needed */
             animation-delay: 1s; /* Small delay before starting */
         }
+
+        /* Message Box for Copy Confirmation */
+        #messageBox {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #messageBox.show {
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="p-4">
 
-    <div class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container">
+    <div id="mainContainer" class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container">
         <!-- Main Heading with Images -->
         <div class="flex items-center justify-center mb-2">
             <!-- Left Image: Source changed to assets/images/left.png -->
@@ -205,6 +224,13 @@
         <div id="pagination-controls" class="flex justify-center items-center mt-6 space-x-2">
             <!-- Pagination buttons will be dynamically added here -->
         </div>
+
+        <!-- Copy Page Content Button -->
+        <div class="flex justify-center mt-8">
+            <button id="copyPageButton" class="px-6 py-3 rounded-lg text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                စာမျက်နှာ Copy ယူရန်
+            </button>
+        </div>
     </div>
 
     <!-- The Modal for student details -->
@@ -236,6 +262,9 @@
         </div>
     </div>
 
+    <!-- Message Box for Copy Confirmation -->
+    <div id="messageBox"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Define all CSV file paths to be combined
@@ -248,22 +277,22 @@
             ];
             
             // Get references to DOM elements
+            const mainContainer = document.getElementById('mainContainer'); // Get the main container to copy
             const tableContainer = document.getElementById('table-container');
             const searchInput = document.getElementById('searchInput');
             const classFilter = document.getElementById('classFilter');
             const cityFilter = document.getElementById('cityFilter');
             const hostelFilter = document.getElementById('hostelFilter');
-            const totalStudentCountElement = document.getElementById('totalStudentCount'); // New element for total student count
+            const totalStudentCountElement = document.getElementById('totalStudentCount');
             const paginationControls = document.getElementById('pagination-controls');
             const studentModal = document.getElementById('studentModal');
             const modalCloseBtn = document.querySelector('.close-button');
+            const copyPageButton = document.getElementById('copyPageButton'); // Copy button
+            const messageBox = document.getElementById('messageBox'); // Message box for feedback
 
             // Data storage and state variables
             let students = []; // All student data (combined from all CSVs)
             let filteredStudents = []; // Students after applying filters/search
-            let classes = new Set(); // Unique classes for filter dropdown
-            let cities = new Set(); // Unique cities for filter dropdown
-            let hostels = new Set(); // Unique hostels for filter dropdown
             let markHeaders = []; // Headers representing marks/dates from CSV (will be from the first CSV found)
 
             // Pagination variables
@@ -278,19 +307,34 @@
             let marksChartInstance = null; // Chart.js instance for the modal chart
 
             /**
+             * Converts Arabic numerals to Burmese numerals.
+             * @param {number} number - The Arabic number to convert.
+             * @returns {string} The number represented in Burmese numerals.
+             */
+            function convertToBurmeseNumerals(number) {
+                const arabicToBurmeseMap = {
+                    '0': '၀', '1': '၁', '2': '၂', '3': '၃', '4': '၄',
+                    '5': '၅', '6': '၆', '7': '၇', '8': '၈', '9': '၉'
+                };
+                return String(number).split('').map(digit => arabicToBurmeseMap[digit] || digit).join('');
+            }
+
+            /**
              * Parses the raw CSV string into an array of student objects.
              * It assumes the first row is headers and subsequent rows are data.
              * It identifies mark headers based on a date format (DD.MM.YYYY).
+             * Only adds valid student records (those with a non-empty name).
              * @param {string} csv - The raw CSV content.
+             * @param {boolean} isFirstFile - True if this is the first CSV file being parsed (for markHeaders).
              * @returns {Array<Object>} An array of student objects.
              */
             function parseCSV(csv, isFirstFile = false) {
-                const lines = csv.split('\n').filter(line => line.trim() !== ''); // Split by line and remove empty lines
+                const lines = csv.split('\n').filter(line => line.trim() !== ''); // Split by line and remove completely empty lines
                 if (lines.length === 0) return [];
 
                 const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, '')); // Parse headers
                 
-                // Only set markHeaders from the first CSV file to ensure consistency
+                // Only set markHeaders from the first CSV file to ensure consistency in chart/modal
                 if (isFirstFile) {
                     markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h)); // Find headers that are dates
                 }
@@ -303,31 +347,75 @@
                     headers.forEach((header, index) => {
                         student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
                     });
-                    data.push(student);
+                    
+                    // Only push student object if it has a non-empty name, preventing empty rows
+                    if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
+                        data.push(student);
+                    }
                 }
                 return data;
             }
 
             /**
-             * Populates the class, city, and hostel filter dropdowns with unique values
-             * extracted from the student data.
+             * Populates a single filter dropdown (class, city, or hostel) with unique values
+             * from a given source array of students. It retains the currently selected value.
+             * @param {HTMLElement} filterElement - The <select> element to populate.
+             * @param {Set<string>} valuesSet - A Set of unique values to add as options.
+             * @param {string} allOptionText - The text for the "All" option.
+             * @param {string} selectedValue - The value that should remain selected if present.
              */
-            function populateFilters() {
-                // Clear existing options first (except the "All" option)
-                classFilter.innerHTML = '<option value="">အတန်း အားလုံး</option>';
-                cityFilter.innerHTML = '<option value="">မြို့ အားလုံး</option>';
-                hostelFilter.innerHTML = '<option value="">အဆောင် အားလုံး</option>';
+            function populateSingleFilter(filterElement, valuesSet, allOptionText, selectedValue) {
+                filterElement.innerHTML = `<option value="">${allOptionText}</option>`;
+                Array.from(valuesSet).sort().forEach(value => {
+                    if (value) { // Ensure the value is not empty
+                        const option = new Option(value, value);
+                        if (value === selectedValue) {
+                            option.selected = true;
+                        }
+                        filterElement.appendChild(option);
+                    }
+                });
+            }
 
-                // Add unique options to each filter
-                Array.from(classes).sort().forEach(cls => {
-                    if (cls) classFilter.appendChild(new Option(cls, cls));
-                });
-                Array.from(cities).sort().forEach(city => {
-                    if (city) cityFilter.appendChild(new Option(city, city));
-                });
-                Array.from(hostels).sort().forEach(hostel => {
-                    if (hostel) hostelFilter.appendChild(new Option(hostel, hostel));
-                });
+            /**
+             * Populates the filter dropdowns (class, city, hostel) based on the current `students` data.
+             * For dependent filters (city, hostel), this function is called with a subset of students
+             * after the class filter has been applied.
+             */
+            function populateAllFilters(sourceStudents) {
+                // Populate Class filter with all unique classes initially
+                const allClasses = new Set();
+                sourceStudents.forEach(s => { if (s.အတန်း) allClasses.add(s.အတန်း); });
+                populateSingleFilter(classFilter, allClasses, 'အတန်း အားလုံး', classFilter.value); // Keep current selection
+
+                // Populate City and Hostel filters based on the currently selected class
+                populateDependentFilters();
+            }
+
+            /**
+             * Populates the City and Hostel filters based on the currently selected Class filter.
+             * This makes the City and Hostel filters dependent on the Class filter.
+             */
+            function populateDependentFilters() {
+                const selectedClass = classFilter.value;
+                const currentCitySelection = cityFilter.value; // Store current city selection
+                const currentHostelSelection = hostelFilter.value; // Store current hostel selection
+
+                let studentsForDependentFilters = students;
+                if (selectedClass !== '') {
+                    // If a class is selected, filter students to only include that class for dependent filters
+                    studentsForDependentFilters = students.filter(student => (student.အတန်း || '') === selectedClass);
+                }
+
+                // Populate City filter based on filtered students
+                const dependentCities = new Set();
+                studentsForDependentFilters.forEach(student => { if (student.မြို့) dependentCities.add(student.မြို့); });
+                populateSingleFilter(cityFilter, dependentCities, 'မြို့ အားလုံး', currentCitySelection);
+
+                // Populate Hostel filter based on filtered students
+                const dependentHostels = new Set();
+                studentsForDependentFilters.forEach(student => { if (student.အဆောင်) dependentHostels.add(student.အဆောင်); });
+                populateSingleFilter(hostelFilter, dependentHostels, 'အဆောင် အားလုံး', currentHostelSelection);
             }
 
             /**
@@ -385,7 +473,7 @@
                 pageData.forEach((student, index) => {
                     tableHtml += `
                         <tr class="table-row">
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${start + index + 1}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(start + index + 1)}</td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-gray-900 font-bold text-base md:text-lg student-name hover:text-purple-700 transition-colors duration-200" data-student-id="${student.စဉ်}">
                                 ${student.နာမည် || ''}
                             </td>
@@ -442,7 +530,7 @@
                     for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
                             <button class="page-btn px-4 py-2 rounded-md text-sm font-semibold shadow-md ${currentPage === i ? 'bg-purple-900 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}">
-                                ${i}
+                                ${convertToBurmeseNumerals(i)}
                             </button>
                         `;
                     }
@@ -469,7 +557,7 @@
                 });
                 document.querySelectorAll('.page-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
-                        currentPage = parseInt(e.target.textContent);
+                        currentPage = parseInt(e.target.textContent); // Convert back to Arabic for internal logic
                         renderTableAndPagination(filteredStudents);
                     });
                 });
@@ -500,6 +588,8 @@
 
                     // Handle numeric sorting for 'စဉ်' (Serial Number)
                     if (sortKey === 'စဉ်') {
+                        // Ensure comparison works correctly for Burmese numerals if 'စဉ်' came from CSV
+                        // However, 'စဉ်' is internally generated by `start + index + 1` so it's always Arabic.
                         comparison = parseInt(aValue, 10) - parseInt(bValue, 10);
                     } else {
                         // Case-insensitive string comparison for other columns
@@ -514,25 +604,37 @@
 
             /**
              * Filters the student list based on current search input and filter dropdown selections.
+             * Also updates dependent filters (City, Hostel) based on Class selection.
              * Re-renders the table with the filtered results.
              */
             function filterStudents() {
                 const searchText = searchInput.value.toLowerCase().trim();
                 const selectedClass = classFilter.value;
-                const selectedCity = cityFilter.value;
-                const selectedHostel = hostelFilter.value;
+                const selectedCity = cityFilter.value; // Get current selection before re-populating
+                const selectedHostel = hostelFilter.value; // Get current selection before re-populating
 
-                const newFilteredList = students.filter(student => {
-                    // Check if student properties exist before calling methods on them
+                // Step 1: Filter students based on search input and class selection
+                let studentsAfterClassAndSearch = students.filter(student => {
                     const nameMatch = (student.နာမည် || '').toLowerCase().includes(searchText);
                     const classMatch = selectedClass === '' || (student.အတန်း || '').includes(selectedClass);
+                    return nameMatch && classMatch;
+                });
+
+                // Step 2: Dynamically populate City and Hostel filters based on studentsAfterClassAndSearch
+                // The classFilter itself is not updated here, as it's the driving filter.
+                populateFilters(studentsAfterClassAndSearch, 'city', selectedCity);
+                populateFilters(studentsAfterClassAndSearch, 'hostel', selectedHostel);
+
+
+                // Step 3: Apply City and Hostel filters to get the final list for table display
+                const finalFilteredList = studentsAfterClassAndSearch.filter(student => {
                     const cityMatch = selectedCity === '' || student.မြို့ === selectedCity;
                     const hostelMatch = selectedHostel === '' || (student.အဆောင် || '').includes(selectedHostel);
-                    
-                    return nameMatch && classMatch && cityMatch && hostelMatch;
+                    return cityMatch && hostelMatch;
                 });
+
                 currentPage = 1; // Reset to first page after filtering
-                renderTableAndPagination(newFilteredList);
+                renderTableAndPagination(finalFilteredList);
             }
             
             /**
@@ -569,7 +671,7 @@
                         row.classList.add('table-row');
                         row.innerHTML = `
                             <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${header}</td>
-                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${mark}</td>
+                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(parseInt(mark, 10))}</td>
                         `;
                         marksBody.appendChild(row);
                         marksData.push(parseInt(mark, 10));
@@ -619,6 +721,9 @@
                                     color: '#4c1d95', // Purple tick labels
                                     font: {
                                         size: 12
+                                    },
+                                    callback: function(value) {
+                                        return convertToBurmeseNumerals(value); // Convert Y-axis ticks to Burmese
                                     }
                                 },
                                 grid: {
@@ -645,6 +750,18 @@
             }
 
             /**
+             * Displays a temporary message box with given text.
+             * @param {string} message - The message to display.
+             */
+            function showMessageBox(message) {
+                messageBox.textContent = message;
+                messageBox.classList.add('show');
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                }, 3000); // Hide after 3 seconds
+            }
+
+            /**
              * Initializes the application by fetching ALL CSVs, parsing data,
              * collecting unique filter values, and rendering the initial table.
              */
@@ -658,10 +775,7 @@
                 paginationControls.innerHTML = ''; // Clear pagination while loading
                 
                 students = []; // Clear previous student data
-                classes.clear(); // Clear previous filter options
-                cities.clear();
-                hostels.clear();
-
+                
                 try {
                     for (let i = 0; i < csvFilePaths.length; i++) {
                         const filePath = csvFilePaths[i];
@@ -675,17 +789,12 @@
                         students = students.concat(parsedData); // Concatenate data from each file
                     }
                     
-                    // After combining all students, collect unique values for filters
-                    students.forEach(student => {
-                        if (student.အတန်း) classes.add(student.အတန်း);
-                        if (student.မြို့) cities.add(student.မြို့);
-                        if (student.အဆောင်) hostels.add(student.အဆောင်);
-                    });
-                    
-                    // Update total student count
-                    totalStudentCountElement.textContent = `စုစုပေါင်း ကျောင်းသား ( ${students.length} ) ရှိပါသည်။`;
+                    // After combining all students, populate all filters initially with all available data
+                    populateAllFilters(students); // Initial population of all filters
 
-                    populateFilters();
+                    // Update total student count
+                    totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော််အရေအတွက်( ${convertToBurmeseNumerals(students.length)} ) ရှိပါသည်။`;
+
                     filterStudents(); // Apply filters and render table with combined data
 
                 } catch (error) {
@@ -703,10 +812,41 @@
 
             // Filter controls
             searchInput.addEventListener('input', filterStudents);
-            classFilter.addEventListener('change', filterStudents);
+            classFilter.addEventListener('change', () => {
+                populateDependentFilters(); // Update city/hostel based on new class selection
+                filterStudents(); // Re-filter and re-render table
+            });
             cityFilter.addEventListener('change', filterStudents);
             hostelFilter.addEventListener('change', filterStudents);
             
+            // Copy Page Button event listener
+            copyPageButton.addEventListener('click', () => {
+                // Create a temporary textarea to hold the content
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = mainContainer.outerHTML; // Get the full HTML of the main container
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                try {
+                    const successful = document.execCommand('copy');
+                    const msg = successful ? 'စာမျက်နှာ Copy ယူပြီးပါပြီ။' : 'Copy ယူ၍ မရပါ။';
+                    showMessageBox(msg);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    showMessageBox('Copy ယူ၍ မရပါ။ (Error)');
+                }
+                document.body.removeChild(tempTextArea);
+            });
+
+            // Modal close events
+            modalCloseBtn.addEventListener('click', () => {
+                studentModal.style.display = 'none';
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target === studentModal) {
+                    studentModal.style.display = 'none';
+                }
+            });
+
             // Initialize the application by loading all CSV files
             initializeApp();
         });
