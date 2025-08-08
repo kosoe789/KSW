@@ -233,6 +233,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Corrected CSV file path to Level2.csv
             const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2.csv'];
             const mainContainer = document.getElementById('mainContainer');
             const tableContainer = document.getElementById('table-container');
@@ -274,10 +275,10 @@
                     .join('');
             }
 
-            function parseCSV(csv) {
+            function parseCSV(csv, classLabel) {
                 const lines = csv.split('\n').filter((line) => line.trim() !== '');
                 if (lines.length === 0) {
-                    console.log('CSV file is empty or contains only whitespace lines.');
+                    console.log(`CSV file for ${classLabel} is empty or contains only whitespace lines.`);
                     return [];
                 }
                 const headers = lines[0].split(',').map((h) => h.trim().replace(/\r/g, ''));
@@ -289,10 +290,8 @@
                         student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
                     });
                     if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
-                        // If class is "Level2", display it as "Level 2"
-                        if (student['အတန်း'] === 'Level2') {
-                            student['အတန်း'] = 'Level 2';
-                        }
+                        // Assign class label from file name
+                        student['အတန်း'] = classLabel;
                         data.push(student);
                     }
                 }
@@ -501,6 +500,7 @@
                                             ? currentSortDirection === 'asc'
                                                 ? '&#9650;'
                                                 : '&#9660;'
+                                            : ''
                                     }</span>
                                   </th>
                                   <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">
@@ -649,7 +649,9 @@
                             continue;
                         }
                         const text = await response.text();
-                        const parsed = parseCSV(text);
+                        // Extract class name from file path for label
+                        let classLabel = filePath.replace('.csv', '').replace('Level', 'Level ');
+                        const parsed = parseCSV(text, classLabel);
                         students = students.concat(parsed);
                     }
 
