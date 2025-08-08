@@ -320,7 +320,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2A.csv'];
+            const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2.csv'];
             const mainContainer = document.getElementById('mainContainer');
             const tableContainer = document.getElementById('table-container');
             const searchInput = document.getElementById('searchInput');
@@ -738,7 +738,7 @@
                         students = students.concat(parsed);
                     }
 
-                    totalStudentCountElement.textContent = `စုစုပေါင်း ကျောင်းသား ( ${convertToBurmeseNumerals(
+                    totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော်အရေအတွက်( ${convertToBurmeseNumerals(
                         students.length
                     )} ) ရှိပါသည်။`;
 
@@ -794,3 +794,4 @@
     </script>
 </body>
 </html>
+
