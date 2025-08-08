@@ -31,6 +31,7 @@
             padding: 1rem 1.25rem; /* Increased padding for better click area */
             border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Lighter border for contrast */
             position: relative; /* For sort icons */
+            font-size: 1.125rem; /* Large font size for table headers (text-lg) */
         }
         .table-header th:hover {
             background-color: #6d28d9; /* Slightly lighter purple on hover */
@@ -130,6 +131,16 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        /* Live Scrolling Text Styles */
+        @keyframes marquee {
+            0% { transform: translateX(100%); } /* Start from right off-screen */
+            100% { transform: translateX(-100%); } /* Move to left off-screen */
+        }
+        .animate-marquee {
+            animation: marquee 15s linear infinite; /* Adjust duration as needed */
+            animation-delay: 1s; /* Small delay before starting */
+        }
     </style>
 </head>
 <body class="p-4">
@@ -149,9 +160,16 @@
         </div>
         
         <!-- Sub-heading -->
-        <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-8">
+        <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-2">
             ၂၀၂၅-၂၀၂၆ ပညာသင်နှစ်
         </p>
+
+        <!-- Live Scrolling Text for Total Students -->
+        <div class="overflow-hidden bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg shadow-lg mb-6">
+            <p id="totalStudentCount" class="inline-block animate-marquee font-bold text-lg md:text-xl whitespace-nowrap">
+                <!-- Total student count will be inserted here by JavaScript -->
+            </p>
+        </div>
 
         <!-- Search and Filter Controls -->
         <div class="flex flex-col md:flex-row items-center justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4 p-4 bg-purple-100 rounded-lg shadow-sm">
@@ -163,7 +181,6 @@
                 aria-label="Search student by name"
             />
             <div class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1">
-                <!-- CSV file selection dropdown has been removed here -->
                 <select id="classFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800" aria-label="Filter by class">
                     <option value="">အတန်း အားလုံး</option>
                 </select>
@@ -236,7 +253,7 @@
             const classFilter = document.getElementById('classFilter');
             const cityFilter = document.getElementById('cityFilter');
             const hostelFilter = document.getElementById('hostelFilter');
-            // const csvFileFilter = document.getElementById('csvFileFilter'); // Removed CSV file selector
+            const totalStudentCountElement = document.getElementById('totalStudentCount'); // New element for total student count
             const paginationControls = document.getElementById('pagination-controls');
             const studentModal = document.getElementById('studentModal');
             const modalCloseBtn = document.querySelector('.close-button');
@@ -665,11 +682,15 @@
                         if (student.အဆောင်) hostels.add(student.အဆောင်);
                     });
                     
+                    // Update total student count
+                    totalStudentCountElement.textContent = `စုစုပေါင်း ကျောင်းသား ( ${students.length} ) ရှိပါသည်။`;
+
                     populateFilters();
                     filterStudents(); // Apply filters and render table with combined data
 
                 } catch (error) {
                     console.error('Error loading or parsing CSV files:', error);
+                    totalStudentCountElement.textContent = `အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားဖြစ်ပွားခဲ့သည်။`; // Display error in live text area
                     tableContainer.innerHTML = `
                         <p class="text-center text-red-600 p-10 text-xl font-medium">
                             အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။
@@ -693,4 +714,3 @@
 
 </body>
 </html>
-
