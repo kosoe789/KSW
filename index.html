@@ -265,7 +265,7 @@
             // Get references to DOM elements
             const mainContainer = document.getElementById('mainContainer'); // Get the main container to copy
             const tableContainer = document.getElementById('table-container');
-            const searchInput = document.getElementById('searchInput');
+            const searchInput = document = document.getElementById('searchInput');
             const classFilter = document.getElementById('classFilter');
             const cityFilter = document.getElementById('cityFilter');
             const hostelFilter = document.getElementById('hostelFilter');
@@ -279,7 +279,6 @@
             // Data storage and state variables
             let students = []; // All student data (combined from all CSVs)
             let filteredStudents = []; // Students after applying filters/search
-            // let markHeaders = []; // Removed: No longer needed as mark columns are not used
 
             // Pagination variables
             const rowsPerPage = 20; // Changed from 10 to 20
@@ -289,8 +288,6 @@
             // Sorting variables
             let currentSortColumn = null;
             let currentSortDirection = 'asc'; // 'asc' for ascending, 'desc' for descending
-
-            // let marksChartInstance = null; // Removed: No longer needed as marks chart is removed
 
             /**
              * Converts Arabic numerals to Burmese numerals.
@@ -310,19 +307,17 @@
              * It assumes the first row is headers and subsequent rows are data.
              * Only adds valid student records (those with a non-empty name).
              * @param {string} csv - The raw CSV content.
-             * @param {boolean} isFirstFile - True if this is the first CSV file being parsed (no longer directly used for markHeaders logic).
              * @returns {Array<Object>} An array of student objects.
              */
-            function parseCSV(csv, isFirstFile = false) { // isFirstFile parameter can be removed if not used anywhere else
+            function parseCSV(csv) {
                 const lines = csv.split('\n').filter(line => line.trim() !== ''); // Split by line and remove completely empty lines
-                if (lines.length === 0) return [];
+                if (lines.length === 0) {
+                    console.log('CSV file is empty or contains only whitespace lines.');
+                    return [];
+                }
 
                 const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, '')); // Parse headers
-                
-                // markHeaders logic removed as marks section is no longer in use
-                // if (isFirstFile) {
-                //     markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h));
-                // }
+                console.log('Parsed CSV Headers:', headers);
 
                 const data = [];
                 // Start from line 1 (skip headers) for all files
@@ -336,8 +331,11 @@
                     // Only push student object if it has a non-empty name, preventing empty rows
                     if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
                         data.push(student);
+                    } else {
+                        console.warn(`Skipping row ${i + 1} due to empty 'နာမည်' column.`);
                     }
                 }
+                console.log('Parsed Data (non-empty names only):', data);
                 return data;
             }
 
@@ -672,15 +670,19 @@
                 try {
                     for (let i = 0; i < csvFilePaths.length; i++) {
                         const filePath = csvFilePaths[i];
+                        console.log(`Attempting to fetch CSV file: ${filePath}`); // Debugging: log which file is being fetched
                         const response = await fetch(filePath);
                         if (!response.ok) {
-                            console.warn(`Warning: Failed to fetch CSV file: ${filePath}. Status: ${response.statusText}. Skipping this file.`);
+                            console.warn(`Warning: Failed to fetch CSV file: ${filePath}. Status: ${response.statusText} (${response.status}). Skipping this file.`);
                             continue; // Skip to next file if one fails to load
                         }
                         const data = await response.text();
-                        const parsedData = parseCSV(data, i === 0); // isFirstFile parameter still passed but its internal usage for markHeaders is removed
+                        console.log(`Successfully fetched ${filePath}. Data length: ${data.length}`); // Debugging: log success
+                        const parsedData = parseCSV(data); // isFirstFile parameter removed as its internal usage is gone
                         students = students.concat(parsedData); // Concatenate data from each file
                     }
+                    
+                    console.log('All CSVs combined. Total students found:', students.length); // Debugging: final student count
                     
                     // After combining all students, populate all filters initially with all available data
                     populateAllFilters(students); // Initial population of all filters
