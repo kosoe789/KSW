@@ -289,6 +289,10 @@
                         student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
                     });
                     if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
+                        // If class is "Level2", display it as "Level 2"
+                        if (student['အတန်း'] === 'Level2') {
+                            student['အတန်း'] = 'Level 2';
+                        }
                         data.push(student);
                     }
                 }
@@ -497,7 +501,6 @@
                                             ? currentSortDirection === 'asc'
                                                 ? '&#9650;'
                                                 : '&#9660;'
-                                            : ''
                                     }</span>
                                   </th>
                                   <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">
@@ -507,7 +510,6 @@
                                             ? currentSortDirection === 'asc'
                                                 ? '&#9650;'
                                                 : '&#9660;'
-                                            : ''
                                     }</span>
                                   </th>
                                   <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">
@@ -517,7 +519,6 @@
                                             ? currentSortDirection === 'asc'
                                                 ? '&#9650;'
                                                 : '&#9660;'
-                                            : ''
                                     }</span>
                                   </th>
                                   <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tr-lg" data-sort-key="အဆောင်">
