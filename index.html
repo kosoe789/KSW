@@ -163,6 +163,7 @@
                 aria-label="Search student by name"
             />
             <div class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1">
+                <!-- CSV file selection dropdown has been removed here -->
                 <select id="classFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800" aria-label="Filter by class">
                     <option value="">အတန်း အားလုံး</option>
                 </select>
@@ -220,7 +221,14 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const csvFilePath = 'Level1A.csv'; // Path to your CSV file
+            // Define all CSV file paths to be combined
+            // *** သင်ထည့်ချင်တဲ့ CSV ဖိုင်လမ်းကြောင်းတွေကို ဒီ list ထဲမှာ အစီအစဉ်လိုက် ထည့်သွင်းပေးပါ ***
+            const csvFilePaths = [
+                'Level1A.csv',
+                'Level1B.csv',
+                'Level2A.csv',
+                // 'your_another_file.csv', // နောက်ထပ်ဖိုင်များထည့်ရန်
+            ];
             
             // Get references to DOM elements
             const tableContainer = document.getElementById('table-container');
@@ -228,17 +236,18 @@
             const classFilter = document.getElementById('classFilter');
             const cityFilter = document.getElementById('cityFilter');
             const hostelFilter = document.getElementById('hostelFilter');
+            // const csvFileFilter = document.getElementById('csvFileFilter'); // Removed CSV file selector
             const paginationControls = document.getElementById('pagination-controls');
             const studentModal = document.getElementById('studentModal');
             const modalCloseBtn = document.querySelector('.close-button');
 
             // Data storage and state variables
-            let students = []; // All student data
+            let students = []; // All student data (combined from all CSVs)
             let filteredStudents = []; // Students after applying filters/search
             let classes = new Set(); // Unique classes for filter dropdown
             let cities = new Set(); // Unique cities for filter dropdown
             let hostels = new Set(); // Unique hostels for filter dropdown
-            let markHeaders = []; // Headers representing marks/dates from CSV
+            let markHeaders = []; // Headers representing marks/dates from CSV (will be from the first CSV found)
 
             // Pagination variables
             const rowsPerPage = 20; // Changed from 10 to 20
@@ -258,14 +267,19 @@
              * @param {string} csv - The raw CSV content.
              * @returns {Array<Object>} An array of student objects.
              */
-            function parseCSV(csv) {
+            function parseCSV(csv, isFirstFile = false) {
                 const lines = csv.split('\n').filter(line => line.trim() !== ''); // Split by line and remove empty lines
                 if (lines.length === 0) return [];
 
                 const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, '')); // Parse headers
-                markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h)); // Find headers that are dates
+                
+                // Only set markHeaders from the first CSV file to ensure consistency
+                if (isFirstFile) {
+                    markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h)); // Find headers that are dates
+                }
 
                 const data = [];
+                // Start from line 1 (skip headers) for all files
                 for (let i = 1; i < lines.length; i++) {
                     const values = lines[i].split(',');
                     const student = {};
@@ -614,19 +628,37 @@
             }
 
             /**
-             * Initializes the application by fetching CSV, parsing data, populating filters,
-             * and rendering the initial table.
+             * Initializes the application by fetching ALL CSVs, parsing data,
+             * collecting unique filter values, and rendering the initial table.
              */
             async function initializeApp() {
+                // Show loading spinner
+                tableContainer.innerHTML = `
+                    <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
+                        <div class="spinner mb-4"></div>
+                        <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
+                    </div>`;
+                paginationControls.innerHTML = ''; // Clear pagination while loading
+                
+                students = []; // Clear previous student data
+                classes.clear(); // Clear previous filter options
+                cities.clear();
+                hostels.clear();
+
                 try {
-                    const response = await fetch(csvFilePath);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch CSV file: ${response.statusText} (${response.status})`);
+                    for (let i = 0; i < csvFilePaths.length; i++) {
+                        const filePath = csvFilePaths[i];
+                        const response = await fetch(filePath);
+                        if (!response.ok) {
+                            console.warn(`Warning: Failed to fetch CSV file: ${filePath}. Status: ${response.statusText}. Skipping this file.`);
+                            continue; // Skip to next file if one fails to load
+                        }
+                        const data = await response.text();
+                        const parsedData = parseCSV(data, i === 0); // Pass true for the first file to set markHeaders
+                        students = students.concat(parsedData); // Concatenate data from each file
                     }
-                    const data = await response.text();
-                    students = parseCSV(data);
                     
-                    // Collect unique values for filters
+                    // After combining all students, collect unique values for filters
                     students.forEach(student => {
                         if (student.အတန်း) classes.add(student.အတန်း);
                         if (student.မြို့) cities.add(student.မြို့);
@@ -634,10 +666,10 @@
                     });
                     
                     populateFilters();
-                    renderTableAndPagination(students); // Initial render with all students
+                    filterStudents(); // Apply filters and render table with combined data
 
                 } catch (error) {
-                    console.error('Error loading or parsing CSV file:', error);
+                    console.error('Error loading or parsing CSV files:', error);
                     tableContainer.innerHTML = `
                         <p class="text-center text-red-600 p-10 text-xl font-medium">
                             အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။
@@ -654,17 +686,7 @@
             cityFilter.addEventListener('change', filterStudents);
             hostelFilter.addEventListener('change', filterStudents);
             
-            // Modal close events
-            modalCloseBtn.addEventListener('click', () => {
-                studentModal.style.display = 'none';
-            });
-            window.addEventListener('click', (event) => {
-                if (event.target === studentModal) {
-                    studentModal.style.display = 'none';
-                }
-            });
-
-            // Initialize the application when the DOM is ready
+            // Initialize the application by loading all CSV files
             initializeApp();
         });
     </script>
