@@ -137,15 +137,15 @@
     <div class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container">
         <!-- Main Heading with Images -->
         <div class="flex items-center justify-center mb-2">
-            <!-- Left Image -->
-            <img src="left.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';" alt="School Left Logo" class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md">
+            <!-- Left Image: Source changed to assets/images/left.png -->
+            <img src="assets/images/left.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';" alt="School Left Logo" class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md">
             
             <h1 class="text-4xl md:text-5xl font-bold text-center text-purple-900">
                 ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း
             </h1>
             
-            <!-- Right Image -->
-            <img src="right.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';" alt="School Right Logo" class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md">
+            <!-- Right Image: Source changed to assets/images/right.png -->
+            <img src="assets/images/right.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';" alt="School Right Logo" class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md">
         </div>
         
         <!-- Sub-heading -->
@@ -354,13 +354,13 @@
                 pageData.forEach((student, index) => {
                     tableHtml += `
                         <tr class="table-row">
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center">${start + index + 1}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${start + index + 1}</td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-gray-900 font-bold text-base md:text-lg student-name hover:text-purple-700 transition-colors duration-200" data-student-id="${student.စဉ်}">
                                 ${student.နာမည် || ''}
                             </td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center">${student.အတန်း || ''}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center">${student.မြို့ || ''}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center">${student.အဆောင် || ''}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${student.အတန်း || ''}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${student.မြို့ || ''}</td>
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${student.အဆောင် || ''}</td>
                         </tr>
                     `;
                 });
@@ -537,8 +537,8 @@
                         const row = document.createElement('tr');
                         row.classList.add('table-row');
                         row.innerHTML = `
-                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center">${header}</td>
-                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center">${mark}</td>
+                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${header}</td>
+                            <td class="px-5 py-2 border-b border-gray-200 bg-white text-center font-bold">${mark}</td>
                         `;
                         marksBody.appendChild(row);
                         marksData.push(parseInt(mark, 10));
