@@ -11,18 +11,44 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Base font styles for the body */
         body {
             font-family: 'Padauk', 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             /* Vibrant purple gradient background */
-            background: linear-gradient(to bottom, #d8b4fe, #a78bfa);
+            background: linear-gradient(to bottom, #d8b4fe, #a78bfa); /* Light to deep purple */
         }
+        /* Custom styles for table header and rows */
         .table-header {
             background-color: #4c1d95; /* Deep purple */
             color: white;
             font-weight: bold;
         }
+        .table-header th {
+            cursor: pointer;
+            user-select: none;
+            padding: 1rem 1.25rem; /* Increased padding for better click area */
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* Lighter border for contrast */
+            position: relative; /* For sort icons */
+        }
+        .table-header th:hover {
+            background-color: #6d28d9; /* Slightly lighter purple on hover */
+        }
+        /* Sort indicator arrow styles */
+        .sort-arrow {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        .sort-arrow.active {
+            opacity: 1;
+            color: #fff;
+        }
+
         .table-row:nth-child(even) {
             background-color: #f3e8ff; /* Very light purple */
         }
@@ -30,10 +56,10 @@
             background-color: #d8b4fe; /* Medium purple on hover */
             transition: background-color 0.2s ease-in-out;
         }
-        .table-header th {
-            cursor: pointer;
-            user-select: none;
+        .table-row td {
+            padding: 1.25rem 1.25rem; /* Consistent padding for table cells */
         }
+
         /* Simple spinner for loading state */
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
@@ -64,45 +90,64 @@
             width: 100%;
             height: 100%;
             overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.5); /* Darker overlay with opacity */
+            backdrop-filter: blur(8px); /* Stronger blur effect */
+            animation-name: fadeInModal;
+            animation-duration: 0.3s;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .modal-content {
-            background-color: #fefefe;
+            background-color: #ffffff; /* Pure white background for content */
             margin: 5% auto; /* 5% from the top and centered */
-            padding: 20px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 800px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            padding: 30px; /* Increased padding */
+            border-radius: 16px; /* More rounded corners */
+            width: 95%; /* Increased width for better mobile view */
+            max-width: 900px; /* Max width for larger screens */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Deeper shadow */
             animation-name: animatetop;
             animation-duration: 0.4s;
-        }
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+            position: relative; /* For close button positioning */
         }
         @keyframes animatetop {
             from { top: -300px; opacity: 0; }
             to { top: 0; opacity: 1; }
+        }
+        .close-button {
+            color: #888;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 36px; /* Larger close button */
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: #4c1d95; /* Deep purple on hover */
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
 <body class="p-4">
 
     <div class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container">
-        <!-- Main Heading -->
-        <h1 class="text-4xl md:text-5xl font-bold text-center text-purple-900 mb-2">
-            ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း
-        </h1>
+        <!-- Main Heading with Images -->
+        <div class="flex items-center justify-center mb-2">
+            <!-- Left Image -->
+            <img src="left.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';" alt="School Left Logo" class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md">
+            
+            <h1 class="text-4xl md:text-5xl font-bold text-center text-purple-900">
+                ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း
+            </h1>
+            
+            <!-- Right Image -->
+            <img src="right.png" onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';" alt="School Right Logo" class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md">
+        </div>
+        
         <!-- Sub-heading -->
         <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-8">
             ၂၀၂၅-၂၀၂၆ ပညာသင်နှစ်
@@ -114,16 +159,17 @@
                 type="text"
                 id="searchInput"
                 placeholder="နာမည်ဖြင့် ရှာဖွေပါ..."
-                class="w-full md:flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+                class="w-full md:flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 text-gray-800 placeholder-gray-500"
+                aria-label="Search student by name"
             />
             <div class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1">
-                <select id="classFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300">
+                <select id="classFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800" aria-label="Filter by class">
                     <option value="">အတန်း အားလုံး</option>
                 </select>
-                <select id="cityFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300">
+                <select id="cityFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800" aria-label="Filter by city">
                     <option value="">မြို့ အားလုံး</option>
                 </select>
-                <select id="hostelFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300">
+                <select id="hostelFilter" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800" aria-label="Filter by hostel">
                     <option value="">အဆောင် အားလုံး</option>
                 </select>
             </div>
@@ -131,9 +177,9 @@
 
         <!-- Student List Table -->
         <div id="table-container" class="overflow-x-auto rounded-lg shadow-lg">
-            <div class="flex justify-center items-center h-48">
-                <div class="spinner"></div>
-                <span class="ml-4 text-gray-500">အချက်အလက်များ တင်နေသည်...</span>
+            <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
+                <div class="spinner mb-4"></div>
+                <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
             </div>
         </div>
 
@@ -143,28 +189,30 @@
         </div>
     </div>
 
-    <!-- The Modal -->
-    <div id="studentModal" class="modal">
+    <!-- The Modal for student details -->
+    <div id="studentModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-student-name">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2 id="modal-student-name" class="text-3xl font-bold text-purple-900 mb-4"></h2>
-            <div class="space-y-2 text-lg text-gray-700 mb-6">
-                <p><strong>အတန်း:</strong> <span id="modal-student-class"></span></p>
-                <p><strong>မြို့:</strong> <span id="modal-student-city"></span></p>
-                <p><strong>အဆောင်:</strong> <span id="modal-student-hostel"></span></p>
+            <span class="close-button" aria-label="Close modal">&times;</span>
+            <h2 id="modal-student-name" class="text-3xl md:text-4xl font-bold text-purple-900 mb-4 text-center"></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-lg text-gray-700 mb-6 p-4 bg-purple-50 rounded-lg">
+                <p><strong>အတန်း:</strong> <span id="modal-student-class" class="text-purple-700 font-medium"></span></p>
+                <p><strong>မြို့:</strong> <span id="modal-student-city" class="text-purple-700 font-medium"></span></p>
+                <p><strong>အဆောင်:</strong> <span id="modal-student-hostel" class="text-purple-700 font-medium"></span></p>
             </div>
             
             <h3 class="text-2xl font-bold text-purple-800 mb-4">အမှတ်စာရင်း</h3>
-            <canvas id="marksChart"></canvas>
+            <div class="bg-gray-50 p-4 rounded-lg shadow-inner mb-6">
+                <canvas id="marksChart"></canvas>
+            </div>
             
-            <table class="min-w-full leading-normal text-sm md:text-base mt-6">
+            <table class="min-w-full leading-normal text-sm md:text-base border-collapse border border-gray-200 rounded-lg overflow-hidden">
                 <thead>
                     <tr class="table-header text-center">
                         <th class="px-5 py-3 border-b-2 border-gray-200">ရက်စွဲ</th>
                         <th class="px-5 py-3 border-b-2 border-gray-200">အမှတ်</th>
                     </tr>
                 </thead>
-                <tbody id="modal-marks-table-body">
+                <tbody id="modal-marks-table-body" class="bg-white">
                 </tbody>
             </table>
         </div>
@@ -172,8 +220,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const csvFilePath = 'Level1A.csv';
+            const csvFilePath = 'Level1A.csv'; // Path to your CSV file
             
+            // Get references to DOM elements
             const tableContainer = document.getElementById('table-container');
             const searchInput = document.getElementById('searchInput');
             const classFilter = document.getElementById('classFilter');
@@ -183,31 +232,39 @@
             const studentModal = document.getElementById('studentModal');
             const modalCloseBtn = document.querySelector('.close-button');
 
-            let students = [];
-            let filteredStudents = [];
-            let classes = new Set();
-            let cities = new Set();
-            let hostels = new Set();
-            let markHeaders = [];
+            // Data storage and state variables
+            let students = []; // All student data
+            let filteredStudents = []; // Students after applying filters/search
+            let classes = new Set(); // Unique classes for filter dropdown
+            let cities = new Set(); // Unique cities for filter dropdown
+            let hostels = new Set(); // Unique hostels for filter dropdown
+            let markHeaders = []; // Headers representing marks/dates from CSV
 
             // Pagination variables
-            const rowsPerPage = 10;
+            const rowsPerPage = 20; // Changed from 10 to 20
             let currentPage = 1;
             let totalPages = 1;
 
+            // Sorting variables
             let currentSortColumn = null;
-            let currentSortDirection = 'asc';
+            let currentSortDirection = 'asc'; // 'asc' for ascending, 'desc' for descending
+
+            let marksChartInstance = null; // Chart.js instance for the modal chart
 
             /**
              * Parses the raw CSV string into an array of student objects.
+             * It assumes the first row is headers and subsequent rows are data.
+             * It identifies mark headers based on a date format (DD.MM.YYYY).
              * @param {string} csv - The raw CSV content.
              * @returns {Array<Object>} An array of student objects.
              */
             function parseCSV(csv) {
-                const lines = csv.split('\n').filter(line => line.trim() !== '');
-                const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
-                markHeaders = headers.filter(h => h.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/)); // Find headers that are dates
-                
+                const lines = csv.split('\n').filter(line => line.trim() !== ''); // Split by line and remove empty lines
+                if (lines.length === 0) return [];
+
+                const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, '')); // Parse headers
+                markHeaders = headers.filter(h => /^\d{1,2}\.\d{1,2}\.\d{4}$/.test(h)); // Find headers that are dates
+
                 const data = [];
                 for (let i = 1; i < lines.length; i++) {
                     const values = lines[i].split(',');
@@ -221,81 +278,84 @@
             }
 
             /**
-             * Populates the dropdown filters with unique values from the student data.
+             * Populates the class, city, and hostel filter dropdowns with unique values
+             * extracted from the student data.
              */
             function populateFilters() {
-                // Populate Class filter
-                classes.forEach(cls => {
-                    if (cls) {
-                        const option = document.createElement('option');
-                        option.value = cls;
-                        option.textContent = cls;
-                        classFilter.appendChild(option);
-                    }
-                });
+                // Clear existing options first (except the "All" option)
+                classFilter.innerHTML = '<option value="">အတန်း အားလုံး</option>';
+                cityFilter.innerHTML = '<option value="">မြို့ အားလုံး</option>';
+                hostelFilter.innerHTML = '<option value="">အဆောင် အားလုံး</option>';
 
-                // Populate City filter
-                cities.forEach(city => {
-                    if (city) {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        cityFilter.appendChild(option);
-                    }
+                // Add unique options to each filter
+                Array.from(classes).sort().forEach(cls => {
+                    if (cls) classFilter.appendChild(new Option(cls, cls));
                 });
-
-                // Populate Hostel filter
-                hostels.forEach(hostel => {
-                    if (hostel) {
-                        const option = document.createElement('option');
-                        option.value = hostel;
-                        option.textContent = hostel;
-                        hostelFilter.appendChild(option);
-                    }
+                Array.from(cities).sort().forEach(city => {
+                    if (city) cityFilter.appendChild(new Option(city, city));
+                });
+                Array.from(hostels).sort().forEach(hostel => {
+                    if (hostel) hostelFilter.appendChild(new Option(hostel, hostel));
                 });
             }
 
             /**
-             * Renders the student table and pagination controls.
+             * Renders the student table based on the current page data and updates pagination controls.
              * @param {Array<Object>} data - The filtered and sorted student data to display.
              */
             function renderTableAndPagination(data) {
                 filteredStudents = data; // Update the global filtered list for pagination
                 totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
-                currentPage = Math.min(Math.max(1, currentPage), totalPages || 1); // Clamp current page
+                currentPage = Math.min(Math.max(1, currentPage), totalPages || 1); // Clamp current page between 1 and totalPages
 
                 const start = (currentPage - 1) * rowsPerPage;
                 const end = start + rowsPerPage;
                 const pageData = filteredStudents.slice(start, end);
 
+                // Display message if no data is found
                 if (pageData.length === 0) {
                     tableContainer.innerHTML = `
-                        <p class="text-center text-gray-500 p-10">
-                            အချက်အလက်မရှိပါ သို့မဟုတ် ရှာမတွေ့ပါ။
+                        <p class="text-center text-gray-600 p-10 text-xl font-medium">
+                            <i class="fas fa-info-circle mr-2"></i> အချက်အလက်မရှိပါ သို့မဟုတ် ရှာမတွေ့ပါ။
                         </p>`;
-                    paginationControls.innerHTML = '';
+                    paginationControls.innerHTML = ''; // Clear pagination if no data
                     return;
                 }
 
-                let html = `
-                    <table class="min-w-full leading-normal text-sm md:text-base">
+                let tableHtml = `
+                    <table class="min-w-full leading-normal text-sm md:text-base border-collapse">
                         <thead>
                             <tr class="table-header text-center">
-                                <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="စဉ်">စဉ်</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 text-left" data-sort-key="နာမည်">နာမည်</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">အတန်း</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">မြို့</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အဆောင်">အဆောင်</th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tl-lg" data-sort-key="စဉ်">
+                                    စဉ်
+                                    <span class="sort-arrow">${currentSortColumn === 'စဉ်' ? (currentSortDirection === 'asc' ? '&#9650;' : '&#9660;') : ''}</span>
+                                </th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 text-left" data-sort-key="နာမည်">
+                                    နာမည်
+                                    <span class="sort-arrow">${currentSortColumn === 'နာမည်' ? (currentSortDirection === 'asc' ? '&#9650;' : '&#9660;') : ''}</span>
+                                </th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">
+                                    အတန်း
+                                    <span class="sort-arrow">${currentSortColumn === 'အတန်း' ? (currentSortDirection === 'asc' ? '&#9650;' : '&#9660;') : ''}</span>
+                                </th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">
+                                    မြို့
+                                    <span class="sort-arrow">${currentSortColumn === 'မြို့' ? (currentSortDirection === 'asc' ? '&#9650;' : '&#9660;') : ''}</span>
+                                </th>
+                                <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tr-lg" data-sort-key="အဆောင်">
+                                    အဆောင်
+                                    <span class="sort-arrow">${currentSortColumn === 'အဆောင်' ? (currentSortDirection === 'asc' ? '&#9650;' : '&#9660;') : ''}</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
 
                 pageData.forEach((student, index) => {
-                    html += `
+                    tableHtml += `
                         <tr class="table-row">
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-center">${start + index + 1}</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-purple-600 font-semibold student-name" data-student-id="${student.စဉ်}">
+                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-gray-900 font-bold text-base md:text-lg student-name hover:text-purple-700 transition-colors duration-200" data-student-id="${student.စဉ်}">
                                 ${student.နာမည် || ''}
                             </td>
                             <td class="px-5 py-5 border-b border-gray-200 bg-white text-center">${student.အတန်း || ''}</td>
@@ -305,58 +365,77 @@
                     `;
                 });
 
-                html += `</tbody></table>`;
-                tableContainer.innerHTML = html;
+                tableHtml += `</tbody></table>`;
+                tableContainer.innerHTML = tableHtml;
 
-                // Render pagination controls
+                // Render pagination controls after table
                 renderPaginationControls();
+
+                // Attach event listeners for sorting headers
+                document.querySelectorAll('.table-header th').forEach(header => {
+                    header.addEventListener('click', handleSort);
+                });
+
+                // Attach event listeners for student name clicks (to open modal)
+                document.querySelectorAll('.student-name').forEach(nameCell => {
+                    nameCell.addEventListener('click', (e) => {
+                        const studentId = e.target.dataset.studentId;
+                        const student = students.find(s => s.စဉ် === studentId);
+                        if (student) {
+                            showStudentModal(student);
+                        }
+                    });
+                });
             }
 
             /**
-             * Renders the pagination buttons.
+             * Renders the pagination buttons (Previous, Page numbers, Next).
              */
             function renderPaginationControls() {
                 let paginationHtml = '';
                 if (totalPages > 1) {
                     paginationHtml += `
-                        <button id="prevBtn" class="px-3 py-1 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+                        <button id="prevBtn" class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === 1 ? 'disabled' : ''}>
                             ယခင်
                         </button>
                     `;
-                    for (let i = 1; i <= totalPages; i++) {
+                    // Render page number buttons, showing a limited range for larger totalPages
+                    const maxPagesToShow = 5;
+                    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+                    if (endPage - startPage + 1 < maxPagesToShow) {
+                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
+
+                    for (let i = startPage; i <= endPage; i++) {
                         paginationHtml += `
-                            <button class="page-btn px-3 py-1 rounded-md text-sm font-semibold ${currentPage === i ? 'bg-purple-900 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}">
+                            <button class="page-btn px-4 py-2 rounded-md text-sm font-semibold shadow-md ${currentPage === i ? 'bg-purple-900 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}">
                                 ${i}
                             </button>
                         `;
                     }
                     paginationHtml += `
-                        <button id="nextBtn" class="px-3 py-1 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
+                        <button id="nextBtn" class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>
                             နောက်
                         </button>
                     `;
                 }
                 paginationControls.innerHTML = paginationHtml;
 
-                // Add event listeners for pagination
-                const prevBtn = document.getElementById('prevBtn');
-                const nextBtn = document.getElementById('nextBtn');
-                if (prevBtn) {
-                    prevBtn.addEventListener('click', () => {
-                        if (currentPage > 1) {
-                            currentPage--;
-                            renderTableAndPagination(filteredStudents);
-                        }
-                    });
-                }
-                if (nextBtn) {
-                    nextBtn.addEventListener('click', () => {
-                        if (currentPage < totalPages) {
-                            currentPage++;
-                            renderTableAndPagination(filteredStudents);
-                        }
-                    });
-                }
+                // Add event listeners for pagination buttons
+                document.getElementById('prevBtn')?.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTableAndPagination(filteredStudents);
+                    }
+                });
+                document.getElementById('nextBtn')?.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTableAndPagination(filteredStudents);
+                    }
+                });
                 document.querySelectorAll('.page-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         currentPage = parseInt(e.target.textContent);
@@ -367,13 +446,14 @@
 
             /**
              * Handles sorting when a table header is clicked.
+             * Toggles sort direction (asc/desc) and re-renders the table.
              * @param {Event} e - The click event.
              */
             function handleSort(e) {
                 const sortKey = e.target.dataset.sortKey;
-                if (!sortKey) return;
+                if (!sortKey) return; // Only sort if data-sort-key is present
 
-                // Toggle sort direction if the same column is clicked
+                // Toggle sort direction if the same column is clicked, otherwise reset to 'asc'
                 if (currentSortColumn === sortKey) {
                     currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
                 } else {
@@ -386,8 +466,15 @@
                     const aValue = a[sortKey];
                     const bValue = b[sortKey];
                     let comparison = 0;
-                    if (aValue > bValue) comparison = 1;
-                    if (aValue < bValue) comparison = -1;
+
+                    // Handle numeric sorting for 'စဉ်' (Serial Number)
+                    if (sortKey === 'စဉ်') {
+                        comparison = parseInt(aValue, 10) - parseInt(bValue, 10);
+                    } else {
+                        // Case-insensitive string comparison for other columns
+                        comparison = aValue.localeCompare(bValue, 'my', { sensitivity: 'base' });
+                    }
+                    
                     return currentSortDirection === 'desc' ? comparison * -1 : comparison;
                 });
                 currentPage = 1; // Reset to first page after sorting
@@ -395,7 +482,8 @@
             }
 
             /**
-             * Filters the student list based on current search and filter values.
+             * Filters the student list based on current search input and filter dropdown selections.
+             * Re-renders the table with the filtered results.
              */
             function filterStudents() {
                 const searchText = searchInput.value.toLowerCase().trim();
@@ -404,6 +492,7 @@
                 const selectedHostel = hostelFilter.value;
 
                 const newFilteredList = students.filter(student => {
+                    // Check if student properties exist before calling methods on them
                     const nameMatch = (student.နာမည် || '').toLowerCase().includes(searchText);
                     const classMatch = selectedClass === '' || (student.အတန်း || '').includes(selectedClass);
                     const cityMatch = selectedCity === '' || student.မြို့ === selectedCity;
@@ -416,25 +505,35 @@
             }
             
             /**
-             * Displays the modal with a student's detailed information and a chart.
+             * Displays the modal with a student's detailed information and a chart of their marks.
              * @param {Object} student - The student object to display.
              */
             function showStudentModal(student) {
-                // Populate modal data
-                document.getElementById('modal-student-name').textContent = student.နာမည်;
-                document.getElementById('modal-student-class').textContent = student.အတန်း;
-                document.getElementById('modal-student-city').textContent = student.မြို့;
-                document.getElementById('modal-student-hostel').textContent = student.အဆောင်;
+                // Populate modal static data
+                document.getElementById('modal-student-name').textContent = student.နာမည် || 'အမည်မသိ';
+                document.getElementById('modal-student-class').textContent = student.အတန်း || 'မရှိပါ';
+                document.getElementById('modal-student-city').textContent = student.မြို့ || 'မရှိပါ';
+                document.getElementById('modal-student-hostel').textContent = student.အဆောင် || 'မရှိပါ';
 
-                // Populate marks table
+                // Populate marks table and prepare data for chart
                 const marksBody = document.getElementById('modal-marks-table-body');
-                marksBody.innerHTML = '';
+                marksBody.innerHTML = ''; // Clear previous marks
                 const marksData = [];
                 const labels = [];
 
-                markHeaders.forEach(header => {
+                // Sort markHeaders to display marks in chronological order
+                const sortedMarkHeaders = [...markHeaders].sort((a, b) => {
+                    // Convert "DD.MM.YYYY" to a sortable date format
+                    const [dayA, monthA, yearA] = a.split('.').map(Number);
+                    const [dayB, monthB, yearB] = b.split('.').map(Number);
+                    const dateA = new Date(yearA, monthA - 1, dayA);
+                    const dateB = new Date(yearB, monthB - 1, dayB);
+                    return dateA - dateB;
+                });
+
+                sortedMarkHeaders.forEach(header => {
                     const mark = student[header];
-                    if (mark) {
+                    if (mark && !isNaN(parseInt(mark, 10))) { // Ensure mark is a valid number
                         const row = document.createElement('tr');
                         row.classList.add('table-row');
                         row.innerHTML = `
@@ -447,46 +546,64 @@
                     }
                 });
 
-                // Render chart
+                // Render or update Chart.js chart
                 const ctx = document.getElementById('marksChart').getContext('2d');
-                if (window.marksChartInstance) {
-                    window.marksChartInstance.destroy();
+                if (marksChartInstance) {
+                    marksChartInstance.destroy(); // Destroy existing chart instance
                 }
-                window.marksChartInstance = new Chart(ctx, {
-                    type: 'bar',
+                marksChartInstance = new Chart(ctx, {
+                    type: 'bar', // Bar chart for marks
                     data: {
                         labels: labels,
                         datasets: [{
                             label: 'ရရှိသော အမှတ်',
                             data: marksData,
-                            backgroundColor: 'rgba(168, 85, 247, 0.6)',
+                            backgroundColor: 'rgba(168, 85, 247, 0.7)', // Slightly more opaque purple
                             borderColor: '#a855f7',
                             borderWidth: 1,
-                            borderRadius: 6
+                            borderRadius: 8, // More rounded bars
+                            hoverBackgroundColor: 'rgba(168, 85, 247, 0.9)' // Darker on hover
                         }]
                     },
                     options: {
                         responsive: true,
+                        maintainAspectRatio: false, // Allows chart to resize freely
+                        plugins: {
+                            legend: {
+                                display: false // No need for legend on this chart
+                            },
+                            tooltip: {
+                                backgroundColor: '#4c1d95', // Darker tooltip background
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderRadius: 6,
+                                padding: 10
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                max: 100,
+                                max: 100, // Assuming marks are out of 100
                                 ticks: {
-                                    color: '#4c1d95'
+                                    color: '#4c1d95', // Purple tick labels
+                                    font: {
+                                        size: 12
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)' // Lighter grid lines
                                 }
                             },
                             x: {
                                 ticks: {
-                                    color: '#4c1d95'
+                                    color: '#4c1d95',
+                                    font: {
+                                        size: 12
+                                    }
+                                },
+                                grid: {
+                                    display: false // No vertical grid lines
                                 }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: '#4c1d95'
                             }
                         }
                     }
@@ -496,15 +613,17 @@
                 studentModal.style.display = 'block';
             }
 
-            // Fetch the CSV file and initialize the application
-            fetch(csvFilePath)
-                .then(response => {
+            /**
+             * Initializes the application by fetching CSV, parsing data, populating filters,
+             * and rendering the initial table.
+             */
+            async function initializeApp() {
+                try {
+                    const response = await fetch(csvFilePath);
                     if (!response.ok) {
-                        throw new Error(`Failed to fetch CSV file: ${response.statusText}`);
+                        throw new Error(`Failed to fetch CSV file: ${response.statusText} (${response.status})`);
                     }
-                    return response.text();
-                })
-                .then(data => {
+                    const data = await response.text();
                     students = parseCSV(data);
                     
                     // Collect unique values for filters
@@ -515,32 +634,21 @@
                     });
                     
                     populateFilters();
-                    renderTableAndPagination(students);
+                    renderTableAndPagination(students); // Initial render with all students
 
-                    // Add event listeners for sorting
-                    tableContainer.addEventListener('click', (e) => {
-                        if (e.target.tagName === 'TH') {
-                            handleSort(e);
-                        }
-                        if (e.target.classList.contains('student-name')) {
-                            const studentId = e.target.dataset.studentId;
-                            const student = students.find(s => s.စဉ် === studentId);
-                            if (student) {
-                                showStudentModal(student);
-                            }
-                        }
-                    });
-
-                })
-                .catch(error => {
-                    console.error('Error loading CSV file:', error);
+                } catch (error) {
+                    console.error('Error loading or parsing CSV file:', error);
                     tableContainer.innerHTML = `
-                        <p class="text-center text-red-500 p-10">
-                            အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။
+                        <p class="text-center text-red-600 p-10 text-xl font-medium">
+                            အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။
                         </p>`;
-                });
+                    paginationControls.innerHTML = ''; // Clear pagination on error
+                }
+            }
 
-            // Add event listeners for filtering
+            // --- Event Listeners ---
+
+            // Filter controls
             searchInput.addEventListener('input', filterStudents);
             classFilter.addEventListener('change', filterStudents);
             cityFilter.addEventListener('change', filterStudents);
@@ -555,6 +663,9 @@
                     studentModal.style.display = 'none';
                 }
             });
+
+            // Initialize the application when the DOM is ready
+            initializeApp();
         });
     </script>
 
