@@ -1,803 +1,801 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း</title>
-    <!-- Add Pyidaungsu font -->
-    <link href="https://cdn.jsdelivr.net/gh/pyidaungsu/font@1.0.5/pyidaungsu.css" rel="stylesheet" />
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js (not currently used) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            font-family: 'Pyidaungsu', 'Padauk', 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            background: linear-gradient(to bottom, #d8b4fe, #a78bfa);
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း</title>
+
+<!-- Pyidaungsu font for Burmese -->
+<link href="https://cdn.jsdelivr.net/gh/pyidaungsu/font@1.0.5/pyidaungsu.css" rel="stylesheet" />
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js (loaded but currently unused) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        font-family: 'Pyidaungsu', 'Padauk', 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: linear-gradient(to bottom, #d8b4fe, #a78bfa);
+    }
+    .table-header {
+        background-color: #4c1d95;
+        color: white;
+        font-weight: bold;
+    }
+    .table-header th {
+        cursor: pointer;
+        user-select: none;
+        padding: 1rem 1.25rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        font-size: 1.125rem;
+    }
+    .table-header th:hover {
+        background-color: #6d28d9;
+    }
+    .sort-arrow {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.8em;
+        opacity: 0.6;
+    }
+    .sort-arrow.active {
+        opacity: 1;
+        color: #fff;
+    }
+    .table-row:nth-child(even) {
+        background-color: #f3e8ff;
+    }
+    .table-row:hover {
+        background-color: #d8b4fe;
+        transition: background-color 0.2s ease-in-out;
+    }
+    .table-row td {
+        padding: 1.25rem 1.25rem;
+    }
+    .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #a855f7;
+        width: 32px;
+        height: 32px;
+        animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
         }
-        .table-header {
-            background-color: #4c1d95;
-            color: white;
-            font-weight: bold;
-        }
-        .table-header th {
-            cursor: pointer;
-            user-select: none;
-            padding: 1rem 1.25rem;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            font-size: 1.125rem;
-        }
-        .table-header th:hover {
-            background-color: #6d28d9;
-        }
-        .sort-arrow {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.8em;
-            opacity: 0.6;
-        }
-        .sort-arrow.active {
-            opacity: 1;
-            color: #fff;
-        }
-        .table-row:nth-child(even) {
-            background-color: #f3e8ff;
-        }
-        .table-row:hover {
-            background-color: #d8b4fe;
-            transition: background-color 0.2s ease-in-out;
-        }
-        .table-row td {
-            padding: 1.25rem 1.25rem;
-        }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #a855f7;
-            width: 32px;
-            height: 32px;
-            animation: spin 1s ease-in-out infinite;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .fade-in-container {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            animation-name: fadeInModal;
-            animation-duration: 0.3s;
-        }
-        @keyframes fadeInModal {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-        .modal-content {
-            background-color: #ffffff;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 16px;
-            width: 95%;
-            max-width: 900px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation-name: animatetop;
-            animation-duration: 0.4s;
-            position: relative;
-        }
-        @keyframes animatetop {
-            from {
-                top: -300px;
-                opacity: 0;
-            }
-            to {
-                top: 0;
-                opacity: 1;
-            }
-        }
-        .close-button {
-            color: #888;
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 36px;
-            font-weight: bold;
-            transition: color 0.2s ease;
-            cursor: pointer;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: #4c1d95;
-            text-decoration: none;
-        }
-        @keyframes marquee {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-        .animate-marquee {
-            animation: marquee 15s linear infinite;
-            animation-delay: 1s;
-        }
-        #messageBox {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #4caf50;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            z-index: 1001;
+    }
+    @keyframes fadeIn {
+        from {
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transform: translateY(20px);
         }
-        #messageBox.show {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .fade-in-container {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        animation-name: fadeInModal;
+        animation-duration: 0.3s;
+    }
+    @keyframes fadeInModal {
+        from {
+            opacity: 0;
+        }
+        to {
             opacity: 1;
         }
-    </style>
+    }
+    .modal-content {
+        background-color: #ffffff;
+        margin: 5% auto;
+        padding: 30px;
+        border-radius: 16px;
+        width: 95%;
+        max-width: 900px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation-name: animatetop;
+        animation-duration: 0.4s;
+        position: relative;
+    }
+    @keyframes animatetop {
+        from {
+            top: -300px;
+            opacity: 0;
+        }
+        to {
+            top: 0;
+            opacity: 1;
+        }
+    }
+    .close-button {
+        color: #888;
+        position: absolute;
+        top: 15px;
+        right: 25px;
+        font-size: 36px;
+        font-weight: bold;
+        transition: color 0.2s ease;
+        cursor: pointer;
+    }
+    .close-button:hover,
+    .close-button:focus {
+        color: #4c1d95;
+        text-decoration: none;
+    }
+    @keyframes marquee {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+    .animate-marquee {
+        animation: marquee 15s linear infinite;
+        animation-delay: 1s;
+    }
+    #totalStudentCount {
+        line-height: 1.1;
+    }
+    #messageBox {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #4caf50;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        z-index: 1001;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+    }
+    #messageBox.show {
+        opacity: 1;
+    }
+</style>
 </head>
 <body class="p-4">
+<div
+    id="mainContainer"
+    class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container"
+>
+    <div class="flex items-center justify-center mb-2">
+        <img
+            src="assets/images/left.png"
+            onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';"
+            alt="School Left Logo"
+            class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md"
+        />
+        <h1 class="text-4xl md:text-5xl font-bold text-center text-purple-900">
+            ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း
+        </h1>
+        <img
+            src="assets/images/right.png"
+            onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';"
+            alt="School Right Logo"
+            class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md"
+        />
+    </div>
+
+    <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-8">
+        ၂၀၂၅ - ၂၀၂၆ ပညာသင်နှစ်
+    </p>
+
     <div
-        id="mainContainer"
-        class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container"
+        class="overflow-hidden bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg shadow-lg mb-6"
     >
-        <div class="flex items-center justify-center mb-2">
-            <img
-                src="assets/images/left.png"
-                onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';"
-                alt="School Left Logo"
-                class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md"
-            />
-            <h1 class="text-4xl md:text-5xl font-bold text-center text-purple-900">
-                ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း
-            </h1>
-            <img
-                src="assets/images/right.png"
-                onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';"
-                alt="School Right Logo"
-                class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md"
-            />
-        </div>
-        <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-2">
-            ၂၀၂၅-၂၀၂၆ ပညာသင်နှစ်
-        </p>
+        <p
+            id="totalStudentCount"
+            class="inline-block animate-marquee font-bold text-lg md:text-xl whitespace-nowrap"
+        ></p>
+    </div>
+
+    <div
+        class="flex flex-col md:flex-row items-center justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4 p-4 bg-purple-100 rounded-lg shadow-sm"
+    >
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="နာမည်ဖြင့် ရှာဖွေပေးပါ..."
+            class="w-full md:flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 text-gray-800 placeholder-gray-500"
+            aria-label="Search student by name"
+        />
         <div
-            class="overflow-hidden bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg shadow-lg mb-6"
+            class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1"
         >
-            <p
-                id="totalStudentCount"
-                class="inline-block animate-marquee font-bold text-lg md:text-xl whitespace-nowrap"
+            <select
+                id="classFilter"
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
+                aria-label="Filter by class"
             >
-                <!-- Total student count will be inserted here -->
+                <option value="">အတန်း အားလုံး</option>
+            </select>
+            <select
+                id="cityFilter"
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
+                aria-label="Filter by city"
+            >
+                <option value="">မြို့ အားလုံး</option>
+            </select>
+            <select
+                id="hostelFilter"
+                class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
+                aria-label="Filter by hostel"
+            >
+                <option value="">အဆောင် အားလုံး</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="table-container" class="overflow-x-auto rounded-lg shadow-lg">
+        <div
+            class="flex flex-col justify-center items-center h-48 bg-white text-purple-700"
+        >
+            <div class="spinner mb-4"></div>
+            <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
+        </div>
+    </div>
+
+    <div id="pagination-controls" class="flex justify-center items-center mt-6 space-x-2"></div>
+
+    <div class="flex justify-center mt-8">
+        <button
+            id="copyPageButton"
+            class="px-6 py-3 rounded-lg text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+            ဇယားကို Copy ယူရန်
+        </button>
+    </div>
+</div>
+
+<!-- Student Details Modal -->
+<div
+    id="studentModal"
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-student-name"
+>
+    <div class="modal-content">
+        <span class="close-button" aria-label="Close modal">&times;</span>
+        <h2
+            id="modal-student-name"
+            class="text-3xl md:text-4xl font-bold text-purple-900 mb-4 text-center"
+        ></h2>
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-lg text-gray-700 mb-6 p-4 bg-purple-50 rounded-lg"
+        >
+            <p>
+                <strong>အတန်း:</strong>
+                <span id="modal-student-class" class="text-purple-700 font-medium"></span>
+            </p>
+            <p>
+                <strong>မြို့:</strong>
+                <span id="modal-student-city" class="text-purple-700 font-medium"></span>
+            </p>
+            <p>
+                <strong>အဆောင်:</strong>
+                <span
+                    id="modal-student-hostel"
+                    class="text-purple-700 font-medium"
+                ></span>
             </p>
         </div>
-
-        <!-- Search and Filter -->
-        <div
-            class="flex flex-col md:flex-row items-center justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4 p-4 bg-purple-100 rounded-lg shadow-sm"
-        >
-            <input
-                type="text"
-                id="searchInput"
-                placeholder="နာမည်ဖြင့် ရှာဖွေပါ..."
-                class="w-full md:flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 text-gray-800 placeholder-gray-500"
-                aria-label="Search student by name"
-            />
-            <div
-                class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1"
-            >
-                <select
-                    id="classFilter"
-                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
-                    aria-label="Filter by class"
-                >
-                    <option value="">အတန်း အားလုံး</option>
-                </select>
-                <select
-                    id="cityFilter"
-                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
-                    aria-label="Filter by city"
-                >
-                    <option value="">မြို့ အားလုံး</option>
-                </select>
-                <select
-                    id="hostelFilter"
-                    class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
-                    aria-label="Filter by hostel"
-                >
-                    <option value="">အဆောင် အားလုံး</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Table Container -->
-        <div id="table-container" class="overflow-x-auto rounded-lg shadow-lg">
-            <div
-                class="flex flex-col justify-center items-center h-48 bg-white text-purple-700"
-            >
-                <div class="spinner mb-4"></div>
-                <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
-            </div>
-        </div>
-
-        <!-- Pagination -->
-        <div
-            id="pagination-controls"
-            class="flex justify-center items-center mt-6 space-x-2"
-        >
-            <!-- Pagination buttons will be generated dynamically -->
-        </div>
-
-        <!-- Copy Button -->
-        <div class="flex justify-center mt-8">
-            <button
-                id="copyPageButton"
-                class="px-6 py-3 rounded-lg text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-                ဇယားကို Copy ယူရန်
-            </button>
-        </div>
     </div>
+</div>
 
-    <!-- Student Details Modal -->
-    <div
-        id="studentModal"
-        class="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-student-name"
-    >
-        <div class="modal-content">
-            <span class="close-button" aria-label="Close modal">&times;</span>
-            <h2
-                id="modal-student-name"
-                class="text-3xl md:text-4xl font-bold text-purple-900 mb-4 text-center"
-            ></h2>
-            <div
-                class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-lg text-gray-700 mb-6 p-4 bg-purple-50 rounded-lg"
+<div id="messageBox"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2.csv']; 
+    const mainContainer = document.getElementById('mainContainer');
+    const tableContainer = document.getElementById('table-container');
+    const searchInput = document.getElementById('searchInput');
+    const classFilter = document.getElementById('classFilter');
+    const cityFilter = document.getElementById('cityFilter');
+    const hostelFilter = document.getElementById('hostelFilter');
+    const totalStudentCountElement = document.getElementById('totalStudentCount');
+    const paginationControls = document.getElementById('pagination-controls');
+    const studentModal = document.getElementById('studentModal');
+    const modalCloseBtn = document.querySelector('.close-button');
+    const copyPageButton = document.getElementById('copyPageButton');
+    const messageBox = document.getElementById('messageBox');
+
+    let students = [];
+    let filteredStudents = [];
+    const rowsPerPage = 20;
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentSortColumn = null;
+    let currentSortDirection = 'asc';
+
+    function convertToBurmeseNumerals(number) {
+        const map = {
+            '0': '၀',
+            '1': '၁',
+            '2': '၂',
+            '3': '၃',
+            '4': '၄',
+            '5': '၅',
+            '6': '၆',
+            '7': '၇',
+            '8': '၈',
+            '9': '၉',
+        };
+        return String(number).split('').map((d) => map[d] || d).join('');
+    }
+
+    function parseCSV(csv) {
+        const lines = csv.split('\n').filter((line) => line.trim() !== '');
+        if (lines.length === 0) {
+            console.log('CSV file is empty or contains only whitespace lines.');
+            return [];
+        }
+        const headers = lines[0].split(',').map((h) => h.trim().replace(/\r/g, ''));
+        const data = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(',');
+            const student = {};
+            headers.forEach((header, index) => {
+                student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
+            });
+            // Normalize "Level2" to "Level 2"
+            if (student['အတန်း']?.trim() === 'Level2') {
+                student['အတန်း'] = 'Level 2';
+            }
+            if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
+                data.push(student);
+            }
+        }
+        return data;
+    }
+
+    // Remove number count suffix from filter option text to get actual class value
+    function getClassValueWithoutCount(selectedValue) {
+        return selectedValue.replace(/\s*\(\d+\)$/, '');
+    }
+
+    function populateSingleFilter(filterElement, valuesSet, allOptionText, selectedValue) {
+        filterElement.innerHTML = `<option value="">${allOptionText}</option>`;
+        Array.from(valuesSet).sort().forEach(value => {
+            if (value) {
+                const option = new Option(value, value);
+                if (value === selectedValue) option.selected = true;
+                filterElement.appendChild(option);
+            }
+        });
+    }
+
+    // Populate city and hostel dropdowns based on class filter selection
+    function populateDependentFilters() {
+        const selectedClass = getClassValueWithoutCount(classFilter.value);
+        const currentCitySelection = cityFilter.value;
+        const currentHostelSelection = hostelFilter.value;
+
+        let filteredForDependent = students;
+        if (selectedClass !== '') {
+            filteredForDependent = students.filter((s) => (s.အတန်း || '') === selectedClass);
+        }
+
+        const cities = new Set();
+        filteredForDependent.forEach((s) => {
+            if (s.မြို့) cities.add(s.မြို့);
+        });
+        populateSingleFilter(cityFilter, cities, 'မြို့ အားလုံး', currentCitySelection);
+
+        const hostels = new Set();
+        filteredForDependent.forEach((s) => {
+            if (s.အဆောင်) hostels.add(s.အဆောင်);
+        });
+        populateSingleFilter(hostelFilter, hostels, 'အဆောင် အားလုံး', currentHostelSelection);
+    }
+
+    function populateAllFilters(sourceStudents) {
+        const classesCount = {};
+        sourceStudents.forEach((s) => {
+            if (s.အတန်း) {
+                // Normalize if needed
+                let cls = s.အတန်း.trim();
+                classesCount[cls] = (classesCount[cls] || 0) + 1;
+            }
+        });
+        const classesWithCount = Object.entries(classesCount).map(([cls, count]) => `${cls} (${convertToBurmeseNumerals(count)})`);
+        classesWithCount.sort();
+        classFilter.innerHTML = '<option value="">အတန်း အားလုံး</option>';
+        classesWithCount.forEach(displayText => {
+            const option = document.createElement('option');
+            option.value = getClassValueWithoutCount(displayText);
+            option.textContent = displayText;
+            if (option.value === getClassValueWithoutCount(classFilter.value)) {
+                option.selected = true;
+            }
+            classFilter.appendChild(option);
+        });
+        populateDependentFilters();
+    }
+
+    function renderPaginationControls() {
+        let html = '';
+        if (totalPages > 1) {
+            html += `<button
+                id="prevBtn"
+                class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${
+                    currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
+                }"
+                ${currentPage === 1 ? 'disabled' : ''}
             >
-                <p>
-                    <strong>အတန်း:</strong>
-                    <span id="modal-student-class" class="text-purple-700 font-medium"></span>
-                </p>
-                <p>
-                    <strong>မြို့:</strong>
-                    <span id="modal-student-city" class="text-purple-700 font-medium"></span>
-                </p>
-                <p>
-                    <strong>အဆောင်:</strong>
-                    <span
-                        id="modal-student-hostel"
-                        class="text-purple-700 font-medium"
-                    ></span>
-                </p>
-            </div>
-        </div>
-    </div>
+                ယခင်
+            </button>`;
 
-    <!-- Message Box -->
-    <div id="messageBox"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2.csv']; // Change Level2A.csv to Level2.csv as needed
-            const mainContainer = document.getElementById('mainContainer');
-            const tableContainer = document.getElementById('table-container');
-            const searchInput = document.getElementById('searchInput');
-            const classFilter = document.getElementById('classFilter');
-            const cityFilter = document.getElementById('cityFilter');
-            const hostelFilter = document.getElementById('hostelFilter');
-            const totalStudentCountElement = document.getElementById('totalStudentCount');
-            const paginationControls = document.getElementById('pagination-controls');
-            const studentModal = document.getElementById('studentModal');
-            const modalCloseBtn = document.querySelector('.close-button');
-            const copyPageButton = document.getElementById('copyPageButton');
-            const messageBox = document.getElementById('messageBox');
-
-            let students = [];
-            let filteredStudents = [];
-            const rowsPerPage = 20;
-            let currentPage = 1;
-            let totalPages = 1;
-            let currentSortColumn = null;
-            let currentSortDirection = 'asc';
-
-            function convertToBurmeseNumerals(number) {
-                const map = {
-                    '0': '၀',
-                    '1': '၁',
-                    '2': '၂',
-                    '3': '၃',
-                    '4': '၄',
-                    '5': '၅',
-                    '6': '၆',
-                    '7': '၇',
-                    '8': '၈',
-                    '9': '၉',
-                };
-                return String(number)
-                    .split('')
-                    .map((d) => map[d] || d)
-                    .join('');
+            const maxPagesToShow = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+            let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+            if (endPage - startPage + 1 < maxPagesToShow) {
+                startPage = Math.max(1, endPage - maxPagesToShow + 1);
             }
-
-            function parseCSV(csv) {
-                const lines = csv.split('\n').filter((line) => line.trim() !== '');
-                if (lines.length === 0) {
-                    console.log('CSV file is empty or contains only whitespace lines.');
-                    return [];
-                }
-                const headers = lines[0].split(',').map((h) => h.trim().replace(/\r/g, ''));
-                const data = [];
-                for (let i = 1; i < lines.length; i++) {
-                    const values = lines[i].split(',');
-                    const student = {};
-                    headers.forEach((header, index) => {
-                        student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
-                    });
-                    // Normalize "Level2" to "Level 2"
-                    if (student['အတန်း']?.trim() === 'Level2') {
-                        student['အတန်း'] = 'Level 2';
-                    }
-                    if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
-                        data.push(student);
-                    }
-                }
-                return data;
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn px-4 py-2 rounded-md text-sm font-semibold shadow-md ${
+                    currentPage === i ? 'bg-purple-900 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                }">${convertToBurmeseNumerals(i)}</button>`;
             }
+            html += `<button
+                id="nextBtn"
+                class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${
+                    currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
+                }"
+                ${currentPage === totalPages ? 'disabled' : ''}
+            >
+                နောက်
+            </button>`;
+        }
+        paginationControls.innerHTML = html;
 
-            function populateSingleFilter(filterElement, valuesSet, allOptionText, selectedValue) {
-                filterElement.innerHTML = `<option value="">${allOptionText}</option>`;
-                Array.from(valuesSet)
-                    .sort()
-                    .forEach((value) => {
-                        if (value) {
-                            const option = new Option(value, value);
-                            if (value === selectedValue) {
-                                option.selected = true;
-                            }
-                            filterElement.appendChild(option);
-                        }
-                    });
-            }
-
-            function populateDependentFilters() {
-                const selectedClass = classFilter.value;
-                const currentCitySelection = cityFilter.value;
-                const currentHostelSelection = hostelFilter.value;
-
-                let filteredForDependent = students;
-                if (selectedClass !== '') {
-                    filteredForDependent = students.filter((s) => (s.အတန်း || '') === selectedClass);
-                }
-
-                const cities = new Set();
-                filteredForDependent.forEach((s) => {
-                    if (s.မြို့) cities.add(s.မြို့);
-                });
-                populateSingleFilter(cityFilter, cities, 'မြို့ အားလုံး', currentCitySelection);
-
-                const hostels = new Set();
-                filteredForDependent.forEach((s) => {
-                    if (s.အဆောင်) hostels.add(s.အဆောင်);
-                });
-                populateSingleFilter(hostelFilter, hostels, 'အဆောင် အားလုံး', currentHostelSelection);
-            }
-
-            function populateAllFilters(sourceStudents) {
-                const classes = new Set();
-                sourceStudents.forEach((s) => {
-                    if (s.အတန်း) {
-                        classes.add(s.အတန်း);
-                    }
-                });
-                populateSingleFilter(classFilter, classes, 'အတန်း အားလုံး', classFilter.value);
-                populateDependentFilters();
-            }
-
-            function renderPaginationControls() {
-                let html = '';
-                if (totalPages > 1) {
-                    html += `<button
-                        id="prevBtn"
-                        class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${
-                            currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
-                        }"
-                        ${currentPage === 1 ? 'disabled' : ''}
-                    >
-                        ယခင်
-                    </button>`;
-
-                    const maxPagesToShow = 5;
-                    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-                    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-                    if (endPage - startPage + 1 < maxPagesToShow) {
-                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
-                    }
-                    for (let i = startPage; i <= endPage; i++) {
-                        html += `<button class="page-btn px-4 py-2 rounded-md text-sm font-semibold shadow-md ${
-                            currentPage === i ? 'bg-purple-900 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                        }">${convertToBurmeseNumerals(i)}</button>`;
-                    }
-                    html += `<button
-                        id="nextBtn"
-                        class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${
-                            currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
-                        }"
-                        ${currentPage === totalPages ? 'disabled' : ''}
-                    >
-                        နောက်
-                    </button>`;
-                }
-                paginationControls.innerHTML = html;
-
-                document.getElementById('prevBtn')?.addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        renderTableAndPagination(filteredStudents);
-                    }
-                });
-                document.getElementById('nextBtn')?.addEventListener('click', () => {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        renderTableAndPagination(filteredStudents);
-                    }
-                });
-                document.querySelectorAll('.page-btn').forEach((btn) => {
-                    btn.addEventListener('click', (e) => {
-                        const burmeseText = e.target.textContent;
-                        const arabicNum = burmeseText
-                            .split('')
-                            .map((c) => {
-                                switch (c) {
-                                    case '၀':
-                                        return '0';
-                                    case '၁':
-                                        return '1';
-                                    case '၂':
-                                        return '2';
-                                    case '၃':
-                                        return '3';
-                                    case '၄':
-                                        return '4';
-                                    case '၅':
-                                        return '5';
-                                    case '၆':
-                                        return '6';
-                                    case '၇':
-                                        return '7';
-                                    case '၈':
-                                        return '8';
-                                    case '၉':
-                                        return '9';
-                                    default:
-                                        return c;
-                                }
-                            })
-                            .join('');
-                        currentPage = parseInt(arabicNum, 10);
-                        renderTableAndPagination(filteredStudents);
-                    });
-                });
-            }
-
-            function handleSort(e) {
-                const th = e.currentTarget;
-                const sortKey = th.dataset.sortKey;
-                if (!sortKey) return;
-
-                if (currentSortColumn === sortKey) {
-                    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-                } else {
-                    currentSortColumn = sortKey;
-                    currentSortDirection = 'asc';
-                }
-
-                filteredStudents.sort((a, b) => {
-                    let aVal = a[sortKey] || '';
-                    let bVal = b[sortKey] || '';
-                    if (sortKey === 'စဉ်') {
-                        return currentSortDirection === 'asc'
-                            ? parseInt(aVal, 10) - parseInt(bVal, 10)
-                            : parseInt(bVal, 10) - parseInt(aVal, 10);
-                    }
-                    aVal = aVal.toString().toLowerCase();
-                    bVal = bVal.toString().toLowerCase();
-                    if (aVal < bVal) return currentSortDirection === 'asc' ? -1 : 1;
-                    if (aVal > bVal) return currentSortDirection === 'asc' ? 1 : -1;
-                    return 0;
-                });
-
-                currentPage = 1;
+        document.getElementById('prevBtn')?.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
                 renderTableAndPagination(filteredStudents);
             }
-
-            function renderTableAndPagination(data) {
-                filteredStudents = data;
-                totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
-                currentPage = Math.min(Math.max(1, currentPage), totalPages || 1);
-                const start = (currentPage - 1) * rowsPerPage;
-                const end = start + rowsPerPage;
-                const pageData = filteredStudents.slice(start, end);
-
-                if (pageData.length === 0) {
-                    tableContainer.innerHTML = `<p class="text-center text-gray-600 p-10 text-xl font-medium">
-                                                      အချက်အလက်မရှိပါ သို့မဟုတ် ရှာမတွေ့ပါ။
-                                                  </p>`;
-                    paginationControls.innerHTML = '';
-                    return;
-                }
-
-                let html = `<table class="min-w-full leading-normal text-sm md:text-base border-collapse">
-                              <thead>
-                                <tr class="table-header text-center">
-                                  <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tl-lg" data-sort-key="စဉ်">
-                                    စဉ်
-                                    <span class="sort-arrow">${
-                                        currentSortColumn === 'စဉ်'
-                                            ? currentSortDirection === 'asc'
-                                                ? '&#9650;'
-                                                : '&#9660;'
-                                            : ''
-                                    }</span>
-                                  </th>
-                                  <th class="px-5 py-3 border-b-2 border-gray-200 text-left" data-sort-key="နာမည်">
-                                    နာမည်
-                                    <span class="sort-arrow">${
-                                        currentSortColumn === 'နာမည်'
-                                            ? currentSortDirection === 'asc'
-                                                ? '&#9650;'
-                                                : '&#9660;'
-                                            : ''
-                                    }</span>
-                                  </th>
-                                  <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">
-                                    အတန်း
-                                    <span class="sort-arrow">${
-                                        currentSortColumn === 'အတန်း'
-                                            ? currentSortDirection === 'asc'
-                                                ? '&#9650;'
-                                                : '&#9660;'
-                                            : ''
-                                    }</span>
-                                  </th>
-                                  <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">
-                                    မြို့
-                                    <span class="sort-arrow">${
-                                        currentSortColumn === 'မြို့'
-                                            ? currentSortDirection === 'asc'
-                                                ? '&#9650;'
-                                                : '&#9660;'
-                                            : ''
-                                    }</span>
-                                  </th>
-                                  <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tr-lg" data-sort-key="အဆောင်">
-                                    အဆောင်
-                                    <span class="sort-arrow">${
-                                        currentSortColumn === 'အဆောင်'
-                                            ? currentSortDirection === 'asc'
-                                                ? '&#9650;'
-                                                : '&#9660;'
-                                            : ''
-                                    }</span>
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>`;
-
-                pageData.forEach((student, i) => {
-                    html += `<tr class="table-row">
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(
-                                    start + i + 1
-                                )}</td>
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-gray-900 font-bold text-base md:text-lg student-name hover:text-purple-700 transition-colors duration-200" data-student-id="${
-                                    student.စဉ်
-                                }">${student.နာမည် || ''}</td>
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${
-                                    student.အတန်း || ''
-                                }</td>
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${
-                                    student.မြို့ || ''
-                                }</td>
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${
-                                    student.အဆောင် || ''
-                                }</td>
-                              </tr>`;
-                });
-
-                html += `</tbody></table>`;
-                tableContainer.innerHTML = html;
-
-                renderPaginationControls();
-
-                document.querySelectorAll('.table-header th').forEach((th) => {
-                    th.addEventListener('click', handleSort);
-                });
-
-                document.querySelectorAll('.student-name').forEach((el) => {
-                    el.addEventListener('click', (e) => {
-                        const studentId = e.target.dataset.studentId;
-                        const student = students.find((s) => s.စဉ် === studentId);
-                        if (student) {
-                            showStudentModal(student);
-                        }
-                    });
-                });
-            }
-
-            function filterStudents() {
-                const searchText = searchInput.value.toLowerCase().trim();
-                const selectedClass = classFilter.value;
-                const selectedCity = cityFilter.value;
-                const selectedHostel = hostelFilter.value;
-
-                let filtered = students.filter((student) => {
-                    const nameMatch = (student.နာမည် || '').toLowerCase().includes(searchText);
-                    const classMatch = selectedClass === '' || (student.အတန်း || '') === selectedClass;
-                    return nameMatch && classMatch;
-                });
-
-                const cities = new Set();
-                const hostels = new Set();
-                filtered.forEach((student) => {
-                    if (student.မြို့) cities.add(student.မြို့);
-                    if (student.အဆောင်) hostels.add(student.အဆောင်);
-                });
-
-                populateSingleFilter(cityFilter, cities, 'မြို့ အားလုံး', selectedCity);
-                populateSingleFilter(hostelFilter, hostels, 'အဆောင် အားလုံး', selectedHostel);
-
-                filtered = filtered.filter((student) => {
-                    const cityMatch = selectedCity === '' || student.မြို့ === selectedCity;
-                    const hostelMatch = selectedHostel === '' || (student.အဆောင် || '') === selectedHostel;
-                    return cityMatch && hostelMatch;
-                });
-
-                currentPage = 1;
-                renderTableAndPagination(filtered);
-            }
-
-            function showStudentModal(student) {
-                document.getElementById('modal-student-name').textContent =
-                    student.နာမည် || 'အမည်မသိ';
-                document.getElementById('modal-student-class').textContent =
-                    student.အတန်း || 'မရှိပါ';
-                document.getElementById('modal-student-city').textContent =
-                    student.မြို့ || 'မရှိပါ';
-                document.getElementById('modal-student-hostel').textContent =
-                    student.အဆောင် || 'မရှိပါ';
-
-                studentModal.style.display = 'block';
-            }
-
-            function showMessageBox(message) {
-                messageBox.textContent = message;
-                messageBox.classList.add('show');
-                setTimeout(() => {
-                    messageBox.classList.remove('show');
-                }, 3000);
-            }
-
-            async function initializeApp() {
-                tableContainer.innerHTML = `
-                    <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
-                        <div class="spinner mb-4"></div>
-                        <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
-                    </div>`;
-                paginationControls.innerHTML = '';
-
-                students = [];
-
-                try {
-                    for (let filePath of csvFilePaths) {
-                        const absPath = new URL(filePath, window.location.href).href;
-                        const response = await fetch(absPath);
-                        if (!response.ok) {
-                            console.warn(`Failed to fetch: ${absPath}`);
-                            continue;
-                        }
-                        const text = await response.text();
-                        const parsed = parseCSV(text);
-                        students = students.concat(parsed);
-                    }
-
-                    totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော်အရေအတွက်( ${convertToBurmeseNumerals(
-                        students.length
-                    )} ) ပါး ရှိပါသည်။`;
-
-                    populateAllFilters(students);
-                    filterStudents();
-                } catch (err) {
-                    console.error('Error loading CSV:', err);
-                    totalStudentCountElement.textContent = 'အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားဖြစ်ပွားခဲ့သည်။';
-                    tableContainer.innerHTML = `
-                        <p class="text-center text-red-600 p-10 text-xl font-medium">
-                            အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။
-                        </p>`;
-                    paginationControls.innerHTML = '';
-                }
-            }
-
-            // Event Listeners
-            searchInput.addEventListener('input', filterStudents);
-            classFilter.addEventListener('change', () => {
-                populateDependentFilters();
-                filterStudents();
-            });
-            cityFilter.addEventListener('change', filterStudents);
-            hostelFilter.addEventListener('change', filterStudents);
-
-            modalCloseBtn.addEventListener('click', () => {
-                studentModal.style.display = 'none';
-            });
-            window.addEventListener('click', (e) => {
-                if (e.target === studentModal) {
-                    studentModal.style.display = 'none';
-                }
-            });
-
-            copyPageButton.addEventListener('click', () => {
-                // Copy only tbody rows text, without column headers
-                const tbodyRows = document.querySelectorAll('#table-container table tbody tr');
-                if (tbodyRows.length === 0) {
-                    showMessageBox('ဇယားအချက်အလက် မရှိပါ။');
-                    return;
-                }
-                let textToCopy = '';
-                tbodyRows.forEach((row) => {
-                    textToCopy += row.innerText + '\n';
-                });
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = textToCopy.trim();
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                try {
-                    const success = document.execCommand('copy');
-                    showMessageBox(success ? 'ဇယားအချက်အလက်ကို Copy ယူပြီးပါပြီ။' : 'Copy ယူ၍ မရပါ။');
-                } catch (err) {
-                    console.error('Copy failed:', err);
-                    showMessageBox('Copy ယူ၍ မရပါ။ (Error)');
-                }
-                document.body.removeChild(tempTextArea);
-            });
-
-            initializeApp();
         });
-    </script>
+        document.getElementById('nextBtn')?.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTableAndPagination(filteredStudents);
+            }
+        });
+        document.querySelectorAll('.page-btn').forEach((btn) => {
+            btn.addEventListener('click', (e) => {
+                const burmeseText = e.target.textContent;
+                const arabicNum = burmeseText
+                    .split('')
+                    .map((c) => {
+                        switch (c) {
+                            case '၀': return '0';
+                            case '၁': return '1';
+                            case '၂': return '2';
+                            case '၃': return '3';
+                            case '၄': return '4';
+                            case '၅': return '5';
+                            case '၆': return '6';
+                            case '၇': return '7';
+                            case '၈': return '8';
+                            case '၉': return '9';
+                            default: return c;
+                        }
+                    })
+                    .join('');
+                currentPage = parseInt(arabicNum, 10);
+                renderTableAndPagination(filteredStudents);
+            });
+        });
+    }
+
+    function handleSort(e) {
+        const th = e.currentTarget;
+        const sortKey = th.dataset.sortKey;
+        if (!sortKey) return;
+
+        if (currentSortColumn === sortKey) {
+            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSortColumn = sortKey;
+            currentSortDirection = 'asc';
+        }
+
+        filteredStudents.sort((a, b) => {
+            let aVal = a[sortKey] || '';
+            let bVal = b[sortKey] || '';
+            if (sortKey === 'စဉ်') {
+                return currentSortDirection === 'asc'
+                    ? parseInt(aVal, 10) - parseInt(bVal, 10)
+                    : parseInt(bVal, 10) - parseInt(aVal, 10);
+            }
+            aVal = aVal.toString().toLowerCase();
+            bVal = bVal.toString().toLowerCase();
+            if (aVal < bVal) return currentSortDirection === 'asc' ? -1 : 1;
+            if (aVal > bVal) return currentSortDirection === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        currentPage = 1;
+        renderTableAndPagination(filteredStudents);
+    }
+
+    function renderTableAndPagination(data) {
+        filteredStudents = data;
+        totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
+        currentPage = Math.min(Math.max(1, currentPage), totalPages || 1);
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const pageData = filteredStudents.slice(start, end);
+
+        if (pageData.length === 0) {
+            tableContainer.innerHTML = `<p class="text-center text-gray-600 p-10 text-xl font-medium">
+                                                  အချက်အလက်မရှိပါ သို့မဟုတ် ရှာမတွေ့ပါ။
+                                              </p>`;
+            paginationControls.innerHTML = '';
+            return;
+        }
+
+        let html = `<table class="min-w-full leading-normal text-sm md:text-base border-collapse">
+                      <thead>
+                        <tr class="table-header text-center">
+                          <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tl-lg" data-sort-key="စဉ်">
+                            စဉ်
+                            <span class="sort-arrow">${
+                                currentSortColumn === 'စဉ်'
+                                    ? currentSortDirection === 'asc'
+                                        ? '&#9650;'
+                                        : '&#9660;'
+                                    : ''
+                            }</span>
+                          </th>
+                          <th class="px-5 py-3 border-b-2 border-gray-200 text-left" data-sort-key="နာမည်">
+                            နာမည်
+                            <span class="sort-arrow">${
+                                currentSortColumn === 'နာမည်'
+                                    ? currentSortDirection === 'asc'
+                                        ? '&#9650;'
+                                        : '&#9660;'
+                                    : ''
+                            }</span>
+                          </th>
+                          <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">
+                            အတန်း
+                            <span class="sort-arrow">${
+                                currentSortColumn === 'အတန်း'
+                                    ? currentSortDirection === 'asc'
+                                        ? '&#9650;'
+                                        : '&#9660;'
+                                    : ''
+                            }</span>
+                          </th>
+                          <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">
+                            မြို့
+                            <span class="sort-arrow">${
+                                currentSortColumn === 'မြို့'
+                                    ? currentSortDirection === 'asc'
+                                        ? '&#9650;'
+                                        : '&#9660;'
+                                    : ''
+                            }</span>
+                          </th>
+                          <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tr-lg" data-sort-key="အဆောင်">
+                            အဆောင်
+                            <span class="sort-arrow">${
+                                currentSortColumn === 'အဆောင်'
+                                    ? currentSortDirection === 'asc'
+                                        ? '&#9650;'
+                                        : '&#9660;'
+                                    : ''
+                            }</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>`;
+
+        pageData.forEach((student, i) => {
+            html += `<tr class="table-row">
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(
+                            start + i + 1
+                        )}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-gray-900 font-bold text-base md:text-lg student-name hover:text-purple-700 transition-colors duration-200" data-student-id="${
+                            student.စဉ်
+                        }">${student.နာမည် || ''}</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${
+                            student.အတန်း || ''
+                        }</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${
+                            student.မြို့ || ''
+                        }</td>
+                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${
+                            student.အဆောင် || ''
+                        }</td>
+                      </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        tableContainer.innerHTML = html;
+
+        renderPaginationControls();
+
+        document.querySelectorAll('.table-header th').forEach((th) => {
+            th.addEventListener('click', handleSort);
+        });
+
+        document.querySelectorAll('.student-name').forEach((el) => {
+            el.addEventListener('click', (e) => {
+                const studentId = e.target.dataset.studentId;
+                const student = students.find((s) => s.စဉ် === studentId);
+                if (student) {
+                    showStudentModal(student);
+                }
+            });
+        });
+    }
+
+    function filterStudents() {
+        const searchText = searchInput.value.toLowerCase().trim();
+        const selectedClassRaw = classFilter.value;
+        const selectedClass = getClassValueWithoutCount(selectedClassRaw);
+        const selectedCity = cityFilter.value;
+        const selectedHostel = hostelFilter.value;
+
+        let filtered = students.filter((student) => {
+            const nameMatch = (student.နာမည် || '').toLowerCase().includes(searchText);
+            const classMatch = selectedClass === '' || (student.အတန်း || '') === selectedClass;
+            return nameMatch && classMatch;
+        });
+
+        const cities = new Set();
+        const hostels = new Set();
+        filtered.forEach((student) => {
+            if (student.မြို့) cities.add(student.မြို့);
+            if (student.အဆောင်) hostels.add(student.အဆောင်);
+        });
+
+        populateSingleFilter(cityFilter, cities, 'မြို့ အားလုံး', selectedCity);
+        populateSingleFilter(hostelFilter, hostels, 'အဆောင် အားလုံး', selectedHostel);
+
+        filtered = filtered.filter((student) => {
+            const cityMatch = selectedCity === '' || student.မြို့ === selectedCity;
+            const hostelMatch = selectedHostel === '' || (student.အဆောင် || '') === selectedHostel;
+            return cityMatch && hostelMatch;
+        });
+
+        currentPage = 1;
+        renderTableAndPagination(filtered);
+    }
+
+    function showStudentModal(student) {
+        document.getElementById('modal-student-name').textContent =
+            student.နာမည် || 'အမည်မသိ';
+        document.getElementById('modal-student-class').textContent =
+            student.အတန်း || 'မရှိပါ';
+        document.getElementById('modal-student-city').textContent =
+            student.မြို့ || 'မရှိပါ';
+        document.getElementById('modal-student-hostel').textContent =
+            student.အဆောင် || 'မရှိပါ';
+
+        studentModal.style.display = 'block';
+    }
+
+    function showMessageBox(message) {
+        messageBox.textContent = message;
+        messageBox.classList.add('show');
+        setTimeout(() => {
+            messageBox.classList.remove('show');
+        }, 3000);
+    }
+
+    async function initializeApp() {
+        tableContainer.innerHTML = `
+            <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
+                <div class="spinner mb-4"></div>
+                <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
+            </div>`;
+        paginationControls.innerHTML = '';
+
+        students = [];
+
+        try {
+            for (let filePath of csvFilePaths) {
+                const absPath = new URL(filePath, window.location.href).href;
+                const response = await fetch(absPath);
+                if (!response.ok) {
+                    console.warn(`Failed to fetch: ${absPath}`);
+                    continue;
+                }
+                const text = await response.text();
+                const parsed = parseCSV(text);
+                students = students.concat(parsed);
+            }
+
+            totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော် အရေအတွက် ( ${convertToBurmeseNumerals(
+                students.length
+            )} ) ပါး ရှိပါသည်။`;
+
+            populateAllFilters(students);
+            filterStudents();
+        } catch (err) {
+            console.error('Error loading CSV:', err);
+            totalStudentCountElement.textContent = 'အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားဖြစ်ပွားခဲ့သည်။';
+            tableContainer.innerHTML = `
+                <p class="text-center text-red-600 p-10 text-xl font-medium">
+                    အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။
+                </p>`;
+            paginationControls.innerHTML = '';
+        }
+    }
+
+    // Event Listeners
+    searchInput.addEventListener('input', filterStudents);
+    classFilter.addEventListener('change', () => {
+        populateDependentFilters();
+        filterStudents();
+    });
+    cityFilter.addEventListener('change', filterStudents);
+    hostelFilter.addEventListener('change', filterStudents);
+
+    modalCloseBtn.addEventListener('click', () => {
+        studentModal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+        if (e.target === studentModal) {
+            studentModal.style.display = 'none';
+        }
+    });
+
+    copyPageButton.addEventListener('click', () => {
+        // Copy only tbody rows text, no column header
+        const tbodyRows = document.querySelectorAll('#table-container table tbody tr');
+        if (tbodyRows.length === 0) {
+            showMessageBox('ဇယားအချက်အလက် မရှိပါ။');
+            return;
+        }
+        let textToCopy = '';
+        tbodyRows.forEach((row) => {
+            textToCopy += row.innerText + '\n';
+        });
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = textToCopy.trim();
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        try {
+            const success = document.execCommand('copy');
+            showMessageBox(success ? 'ဇယားအချက်အလက်ကို Copy ယူပြီးပါပြီ။' : 'Copy ယူ၍ မရပါ။');
+        } catch (err) {
+            console.error('Copy failed:', err);
+            showMessageBox('Copy ယူ၍ မရပါ။ (Error)');
+        }
+        document.body.removeChild(tempTextArea);
+    });
+
+    initializeApp();
+});
+</script>
 </body>
 </html>
