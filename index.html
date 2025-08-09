@@ -4,20 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Padauk:wght@400;700&display=swap"
-        rel="stylesheet"
-    />
+    <!-- Add Pyidaungsu font -->
+    <link href="https://cdn.jsdelivr.net/gh/pyidaungsu/font@1.0.5/pyidaungsu.css" rel="stylesheet" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js (not used currently, loaded for future) -->
+    <!-- Chart.js (not currently used) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            font-family: 'Padauk', 'Inter', sans-serif;
+            font-family: 'Pyidaungsu', 'Padauk', 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             background: linear-gradient(to bottom, #d8b4fe, #a78bfa);
@@ -320,7 +315,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2.csv']; // Changed Level2A.csv to Level2.csv
+            const csvFilePaths = ['Level1A.csv', 'Level1B.csv', 'Level2.csv']; // Change Level2A.csv to Level2.csv as needed
             const mainContainer = document.getElementById('mainContainer');
             const tableContainer = document.getElementById('table-container');
             const searchInput = document.getElementById('searchInput');
@@ -375,11 +370,11 @@
                     headers.forEach((header, index) => {
                         student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
                     });
+                    // Normalize "Level2" to "Level 2"
+                    if (student['အတန်း']?.trim() === 'Level2') {
+                        student['အတန်း'] = 'Level 2';
+                    }
                     if (student['နာမည်'] && student['နာမည်'].trim() !== '') {
-                        // Change "Level2" string to "Level 2" if needed here (optional, depends on CSV data quality)
-                        if (student['အတန်း']?.trim() === 'Level2') {
-                            student['အတန်း'] = 'Level 2';
-                        }
                         data.push(student);
                     }
                 }
@@ -407,7 +402,6 @@
                 const currentHostelSelection = hostelFilter.value;
 
                 let filteredForDependent = students;
-
                 if (selectedClass !== '') {
                     filteredForDependent = students.filter((s) => (s.အတန်း || '') === selectedClass);
                 }
@@ -429,10 +423,7 @@
                 const classes = new Set();
                 sourceStudents.forEach((s) => {
                     if (s.အတန်း) {
-                        let className = s.အတန်း.trim();
-                        if (className === 'Level2') className = 'Level 2';  // Ensure display as "Level 2"
-                        classes.add(className);
-                        s.အတန်း = className; // Normalize in students too
+                        classes.add(s.အတန်း);
                     }
                 });
                 populateSingleFilter(classFilter, classes, 'အတန်း အားလုံး', classFilter.value);
@@ -745,9 +736,9 @@
                         students = students.concat(parsed);
                     }
 
-                    totalStudentCountElement.textContent = `စုစုပေါင်း ကျောင်းသား ( ${convertToBurmeseNumerals(
+                    totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော်အရေအတွက်( ${convertToBurmeseNumerals(
                         students.length
-                    )} ) ရှိပါသည်။`;
+                    )} ) ပါး ရှိပါသည်။`;
 
                     populateAllFilters(students);
                     filterStudents();
@@ -762,6 +753,7 @@
                 }
             }
 
+            // Event Listeners
             searchInput.addEventListener('input', filterStudents);
             classFilter.addEventListener('change', () => {
                 populateDependentFilters();
@@ -780,13 +772,18 @@
             });
 
             copyPageButton.addEventListener('click', () => {
-                const tableElement = document.querySelector('#table-container table');
-                if (!tableElement) {
+                // Copy only tbody rows text, without column headers
+                const tbodyRows = document.querySelectorAll('#table-container table tbody tr');
+                if (tbodyRows.length === 0) {
                     showMessageBox('ဇယားအချက်အလက် မရှိပါ။');
                     return;
                 }
+                let textToCopy = '';
+                tbodyRows.forEach((row) => {
+                    textToCopy += row.innerText + '\n';
+                });
                 const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = tableElement.innerText;
+                tempTextArea.value = textToCopy.trim();
                 document.body.appendChild(tempTextArea);
                 tempTextArea.select();
                 try {
