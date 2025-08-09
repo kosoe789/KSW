@@ -66,19 +66,11 @@
     animation: spin 1s ease-in-out infinite;
   }
   @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
   }
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .fade-in-container {
     animation: fadeIn 0.8s ease-out forwards;
@@ -87,23 +79,17 @@
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0,0,0,0.5);
     backdrop-filter: blur(8px);
     animation-name: fadeInModal;
     animation-duration: 0.3s;
   }
   @keyframes fadeInModal {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   .modal-content {
     background-color: #ffffff;
@@ -112,26 +98,19 @@
     border-radius: 16px;
     width: 95%;
     max-width: 900px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     animation-name: animatetop;
     animation-duration: 0.4s;
     position: relative;
   }
   @keyframes animatetop {
-    from {
-      top: -300px;
-      opacity: 0;
-    }
-    to {
-      top: 0;
-      opacity: 1;
-    }
+    from { top: -300px; opacity: 0; }
+    to { top: 0; opacity: 1; }
   }
   .close-button {
     color: #888;
     position: absolute;
-    top: 15px;
-    right: 25px;
+    top: 15px; right: 25px;
     font-size: 36px;
     font-weight: bold;
     transition: color 0.2s ease;
@@ -143,13 +122,10 @@
     text-decoration: none;
   }
 
+  /* Live scrolling banner styles */
   @keyframes marquee {
-    0% {
-      transform: translateX(-100%);
-    }
-    100% {
-      transform: translateX(100%);
-    }
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
   .animate-marquee {
     animation: marquee 15s linear infinite;
@@ -160,10 +136,34 @@
     margin-bottom: 1rem;
   }
 
+  /* Search input clear button styles */
+  .search-container {
+    position: relative;
+    width: 100%;
+  }
+  #searchInput {
+    width: 100%;
+    padding-right: 2.5rem;
+  }
+  #clearSearchButton {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    display: none;
+    padding: 0;
+  }
+  #clearSearchButton:hover {
+    color: #6b21a8;
+  }
+
   #messageBox {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
+    bottom: 20px; left: 50%;
     transform: translateX(-50%);
     background-color: #4caf50;
     color: white;
@@ -181,56 +181,47 @@
 </head>
 <body class="p-4">
 
-<div
-  id="mainContainer"
-  class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container"
->
+<div id="mainContainer" class="container max-w-7xl mx-auto p-6 md:p-10 bg-white rounded-xl shadow-2xl mt-8 fade-in-container">
+
   <div class="flex items-center justify-center mb-2">
-    <img
-      src="assets/images/left.png"
-      onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';"
-      alt="School Left Logo"
-      class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md"
-    />
-    <h1
-      class="text-4xl md:text-5xl font-bold text-center text-purple-900"
-    >
+    <img src="assets/images/left.png" alt="Left Logo"
+      onerror="this.onerror=null;this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Left+Logo';"
+      class="w-20 h-20 md:w-24 md:h-24 mr-4 rounded-full shadow-md" />
+    <h1 class="text-4xl md:text-5xl font-bold text-center text-purple-900">
       ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း
     </h1>
-    <img
-      src="assets/images/right.png"
-      onerror="this.onerror=null; this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';"
-      alt="School Right Logo"
-      class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md"
-    />
+    <img src="assets/images/right.png" alt="Right Logo"
+      onerror="this.onerror=null;this.src='https://placehold.co/70x70/A78BFA/FFFFFF?text=Right+Logo';"
+      class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md" />
   </div>
 
   <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-8">
     ၂၀၂၅ - ၂၀၂၆ ပညာသင်နှစ်
   </p>
 
-  <div
-    class="overflow-hidden bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg shadow-lg mb-6"
-  >
-    <p
-      id="totalStudentCount"
-      class="inline-block animate-marquee font-bold text-lg md:text-xl whitespace-nowrap"
-    ></p>
+  <div class="overflow-hidden bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg shadow-lg mb-6">
+    <p id="totalStudentCount" class="inline-block animate-marquee font-bold text-lg md:text-xl whitespace-nowrap"></p>
   </div>
 
   <div
     class="flex flex-col md:flex-row items-center justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4 p-4 bg-purple-100 rounded-lg shadow-sm"
   >
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="နာမည်ဖြင့် ရှာဖွေပါ..."
-      class="w-full md:flex-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 text-gray-800 placeholder-gray-500"
-      aria-label="Search student by name"
-    />
-    <div
-      class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1"
-    >
+    <div class="search-container md:flex-1">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="နာမည်ဖြင့် ရှာဖွေပါ..."
+        aria-label="Search student by name"
+        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 text-gray-800 placeholder-gray-500"
+      />
+      <button id="clearSearchButton" aria-label="ရှာဖွေရေး ဖျက်ရန်" title="ရှာဖွေရေး ဖျက်ရန်">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1">
       <select
         id="classFilter"
         class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
@@ -256,9 +247,7 @@
   </div>
 
   <div id="table-container" class="overflow-x-auto rounded-lg shadow-lg">
-    <div
-      class="flex flex-col justify-center items-center h-48 bg-white text-purple-700"
-    >
+    <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
       <div class="spinner mb-4"></div>
       <span class="text-lg font-semibold">အချက်အလက်များ တင်နေသည်...</span>
     </div>
@@ -276,34 +265,14 @@
   </div>
 </div>
 
-<div
-  id="studentModal"
-  class="modal"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="modal-student-name"
->
+<div id="studentModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-student-name">
   <div class="modal-content">
     <span class="close-button" aria-label="Close modal">&times;</span>
-    <h2
-      id="modal-student-name"
-      class="text-3xl md:text-4xl font-bold text-purple-900 mb-4 text-center"
-    ></h2>
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-lg text-gray-700 mb-6 p-4 bg-purple-50 rounded-lg"
-    >
-      <p>
-        <strong>အတန်း:</strong>
-        <span id="modal-student-class" class="text-purple-700 font-medium"></span>
-      </p>
-      <p>
-        <strong>မြို့:</strong>
-        <span id="modal-student-city" class="text-purple-700 font-medium"></span>
-      </p>
-      <p>
-        <strong>အဆောင်:</strong>
-        <span id="modal-student-hostel" class="text-purple-700 font-medium"></span>
-      </p>
+    <h2 id="modal-student-name" class="text-3xl md:text-4xl font-bold text-purple-900 mb-4 text-center"></h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-6 text-lg text-gray-700 mb-6 p-4 bg-purple-50 rounded-lg">
+      <p><strong>အတန်း:</strong> <span id="modal-student-class" class="text-purple-700 font-medium"></span></p>
+      <p><strong>မြို့:</strong> <span id="modal-student-city" class="text-purple-700 font-medium"></span></p>
+      <p><strong>အဆောင်:</strong> <span id="modal-student-hostel" class="text-purple-700 font-medium"></span></p>
     </div>
   </div>
 </div>
@@ -316,6 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const mainContainer = document.getElementById('mainContainer');
   const tableContainer = document.getElementById('table-container');
   const searchInput = document.getElementById('searchInput');
+  const clearSearchButton = document.getElementById('clearSearchButton');
   const classFilter = document.getElementById('classFilter');
   const cityFilter = document.getElementById('cityFilter');
   const hostelFilter = document.getElementById('hostelFilter');
@@ -323,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const paginationControls = document.getElementById('pagination-controls');
   const studentModal = document.getElementById('studentModal');
   const modalCloseBtn = document.querySelector('.close-button');
-  const copyPageButton = document.getElementById('copyPageButton');
+  const copyPageButton = document.getElementById('copyPageButton'); 
   const messageBox = document.getElementById('messageBox');
 
   let students = [];
@@ -335,62 +305,42 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentSortDirection = 'asc';
 
   function convertToBurmeseNumerals(number) {
-    const map = {
-      '0': '၀',
-      '1': '၁',
-      '2': '၂',
-      '3': '၃',
-      '4': '၄',
-      '5': '၅',
-      '6': '၆',
-      '7': '၇',
-      '8': '၈',
-      '9': '၉'
-    };
+    const map = {'0':'၀','1':'၁','2':'၂','3':'၃','4':'၄','5':'၅','6':'၆','7':'၇','8':'၈','9':'၉'};
     return String(number).split('').map(d => map[d] || d).join('');
   }
 
   function parseCSV(csv) {
     const lines = csv.split('\n').filter(line => line.trim() !== '');
-    if (lines.length === 0) return [];
-    const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g, ''));
+    if(lines.length === 0) return [];
+    const headers = lines[0].split(',').map(h => h.trim().replace(/\r/g,''));
     const data = [];
-    for(let i=1; i < lines.length; i++){
+    for(let i=1; i<lines.length; i++) {
       const values = lines[i].split(',');
       const student = {};
-      headers.forEach((header, index) => {
-        student[header] = values[index] ? values[index].trim().replace(/\r/g, '') : '';
+      headers.forEach((header, idx) => {
+        student[header] = values[idx] ? values[idx].trim().replace(/\r/g,'') : '';
       });
-      if(student['အတန်း']?.trim() === 'Level2'){
-        student['အတန်း'] = 'Level 2';
-      }
-      if(student['နာမည်'] && student['နာမည်'].trim() !== ''){
-        data.push(student);
-      }
+      if(student['အတန်း']?.trim() === 'Level2') student['အတန်း'] = 'Level 2';
+      if(student['နာမည်'] && student['နာမည်'].trim() !== '') data.push(student);
     }
     return data;
   }
 
-  // Build dropdown options with counts e.g. "Level 1A (၅၇)", but value = plain name
-  function buildFilterOptionsWithCount(filterElement, items, allOptionText, selectedValue){
+  // Builds dropdown options with counts, value is clean, text has count in Burmese
+  function buildFilterOptionsWithCount(filterElement, items, allOptionText, selectedValue) {
     const countMap = {};
     items.forEach(item => {
-      if(item){
-        countMap[item] = (countMap[item] || 0) + 1;
-      }
+      if(item) countMap[item] = (countMap[item] || 0) + 1;
     });
-    const optionsWithCount = Object.entries(countMap).map(([name, count]) => ({
-      name,
-      displayText: `${name} (${convertToBurmeseNumerals(count)})`
-    })).sort((a,b) => a.name.localeCompare(b.name));
-
+    const sortedOptions = Object.entries(countMap)
+      .map(([name,count]) => ({ name, displayText: `${name} (${convertToBurmeseNumerals(count)})` }))
+      .sort((a,b) => a.name.localeCompare(b.name));
     filterElement.innerHTML = '';
     const allOption = document.createElement('option');
     allOption.value = '';
     allOption.textContent = allOptionText;
     filterElement.appendChild(allOption);
-
-    optionsWithCount.forEach(({name, displayText}) => {
+    sortedOptions.forEach(({name, displayText}) => {
       const option = document.createElement('option');
       option.value = name;
       option.textContent = displayText;
@@ -399,19 +349,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function populateAllFilters(sourceStudents){
+  function populateAllFilters(sourceStudents) {
     const classes = sourceStudents.map(s => s['အတန်း']).filter(Boolean);
     buildFilterOptionsWithCount(classFilter, classes, 'အတန်း အားလုံး', classFilter.value);
     populateDependentFilters();
   }
 
-  function populateDependentFilters(){
+  function populateDependentFilters() {
     const selectedClass = classFilter.value;
     const currentCitySelection = cityFilter.value;
     const currentHostelSelection = hostelFilter.value;
 
     let filteredForDependent = students;
-    if(selectedClass !== ''){
+    if(selectedClass !== '') {
       filteredForDependent = students.filter(s => (s['အတန်း'] || '') === selectedClass);
     }
 
@@ -422,18 +372,15 @@ document.addEventListener('DOMContentLoaded', () => {
     buildFilterOptionsWithCount(hostelFilter, hostels, 'အဆောင် အားလုံး', currentHostelSelection);
   }
 
-  function renderPaginationControls(){
+  function renderPaginationControls() {
     let html = '';
-    if(totalPages > 1){
+    if(totalPages > 1) {
       html += `<button id="prevBtn" class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === 1 ? 'disabled' : ''}>ယခင်</button>`;
-
       const maxPagesToShow = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+      let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow/2));
       let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-      if(endPage - startPage + 1 < maxPagesToShow){
-        startPage = Math.max(1, endPage - maxPagesToShow + 1);
-      }
-      for(let i=startPage; i<=endPage; i++){
+      if (endPage - startPage + 1 < maxPagesToShow) startPage = Math.max(1, endPage - maxPagesToShow + 1);
+      for(let i=startPage; i<=endPage; i++) {
         html += `<button class="page-btn px-4 py-2 rounded-md text-sm font-semibold shadow-md ${currentPage === i ? 'bg-purple-900 text-white' : 'bg-gray-300 text-gray-700 hover:bg-gray-400'}">${convertToBurmeseNumerals(i)}</button>`;
       }
       html += `<button id="nextBtn" class="px-4 py-2 rounded-md text-sm font-semibold text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200 shadow-md ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>နောက်</button>`;
@@ -441,13 +388,13 @@ document.addEventListener('DOMContentLoaded', () => {
     paginationControls.innerHTML = html;
 
     document.getElementById('prevBtn')?.addEventListener('click', () => {
-      if(currentPage > 1){
+      if(currentPage > 1) {
         currentPage--;
         renderTableAndPagination(filteredStudents);
       }
     });
     document.getElementById('nextBtn')?.addEventListener('click', () => {
-      if(currentPage < totalPages){
+      if(currentPage < totalPages) {
         currentPage++;
         renderTableAndPagination(filteredStudents);
       }
@@ -476,43 +423,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function handleSort(e){
-    const th = e.currentTarget;
+  function handleSort(event) {
+    const th = event.currentTarget;
     const sortKey = th.dataset.sortKey;
     if(!sortKey) return;
 
-    if(currentSortColumn === sortKey){
+    if(currentSortColumn === sortKey) {
       currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       currentSortColumn = sortKey;
       currentSortDirection = 'asc';
     }
 
-    filteredStudents.sort((a,b) => {
+    filteredStudents.sort((a,b)=>{
       let aVal = a[sortKey] || '';
       let bVal = b[sortKey] || '';
 
       if(sortKey === 'စဉ်'){
         return currentSortDirection === 'asc' ? parseInt(aVal,10) - parseInt(bVal,10) : parseInt(bVal,10) - parseInt(aVal,10);
       }
+
       aVal = aVal.toString().toLowerCase();
       bVal = bVal.toString().toLowerCase();
-
       if(aVal < bVal) return currentSortDirection === 'asc' ? -1 : 1;
       if(aVal > bVal) return currentSortDirection === 'asc' ? 1 : -1;
       return 0;
     });
+
     currentPage = 1;
     renderTableAndPagination(filteredStudents);
   }
 
-  function renderTableAndPagination(data){
+  function renderTableAndPagination(data) {
     filteredStudents = data;
     totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
-    currentPage = Math.min(Math.max(1,currentPage), totalPages || 1);
-    const start = (currentPage - 1) * rowsPerPage;
+    currentPage = Math.min(Math.max(1, currentPage), totalPages || 1);
+
+    const start = (currentPage -1) * rowsPerPage;
     const end = start + rowsPerPage;
-    const pageData = filteredStudents.slice(start,end);
+    const pageData = filteredStudents.slice(start, end);
 
     if(pageData.length === 0){
       tableContainer.innerHTML = `<p class="text-center text-gray-600 p-10 text-xl font-medium">အချက်အလက်များ မရှိပါ သို့မဟုတ် ရှာမတွေ့ပါ။</p>`;
@@ -523,31 +472,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let html = `<table class="min-w-full leading-normal text-sm md:text-base border-collapse">
       <thead>
         <tr class="table-header text-center">
-          <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tl-lg" data-sort-key="စဉ်">စဉ်<span class="sort-arrow">${currentSortColumn==='စဉ်'? (currentSortDirection==='asc'? '&#9650;':'&#9660;') : ''}</span></th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 text-left" data-sort-key="နာမည်">နာမည်<span class="sort-arrow">${currentSortColumn==='နာမည်'? (currentSortDirection==='asc'? '&#9650;':'&#9660;') : ''}</span></th>
-          <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">အတန်း<span class="sort-arrow">${currentSortColumn==='အတန်း'? (currentSortDirection==='asc'? '&#9650;':'&#9660;') : ''}</span></th>
-          <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">မြို့<span class="sort-arrow">${currentSortColumn==='မြို့'? (currentSortDirection==='asc'? '&#9650;':'&#9660;') : ''}</span></th>
-          <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tr-lg" data-sort-key="အဆောင်">အဆောင်<span class="sort-arrow">${currentSortColumn==='အဆောင်'? (currentSortDirection==='asc'? '&#9650;':'&#9660;') : ''}</span></th>
+          <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tl-lg" data-sort-key="စဉ်">စဉ်<span class="sort-arrow">${currentSortColumn==='စဉ်'? (currentSortDirection==='asc'? '&#9650;' : '&#9660;') : ''}</span></th>
+          <th class="px-5 py-3 border-b-2 border-gray-200 text-left" data-sort-key="နာမည်">နာမည်<span class="sort-arrow">${currentSortColumn==='နာမည်'? (currentSortDirection==='asc'? '&#9650;' : '&#9660;') : ''}</span></th>
+          <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="အတန်း">အတန်း<span class="sort-arrow">${currentSortColumn==='အတန်း'? (currentSortDirection==='asc'? '&#9650;' : '&#9660;') : ''}</span></th>
+          <th class="px-5 py-3 border-b-2 border-gray-200" data-sort-key="မြို့">မြို့<span class="sort-arrow">${currentSortColumn==='မြို့'? (currentSortDirection==='asc'? '&#9650;' : '&#9660;') : ''}</span></th>
+          <th class="px-5 py-3 border-b-2 border-gray-200 rounded-tr-lg" data-sort-key="အဆောင်">အဆောင်<span class="sort-arrow">${currentSortColumn==='အဆောင်'? (currentSortDirection==='asc'? '&#9650;' : '&#9660;') : ''}</span></th>
         </tr>
       </thead>
-      <tbody>`;
+      <tbody>
+    `;
 
-    pageData.forEach((student,i) => {
+    pageData.forEach((student, i) => {
       html += `<tr class="table-row">
-        <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(start+i+1)}</td>
+        <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${convertToBurmeseNumerals(start + i + 1)}</td>
         <td class="px-5 py-5 border-b border-gray-200 bg-white text-left cursor-pointer text-gray-900 font-bold text-base md:text-lg student-name hover:text-purple-700 transition-colors duration-200" data-student-id="${student.စဉ်}">${student.နာမည်||''}</td>
         <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${student.အတန်း||''}</td>
         <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${student.မြို့||''}</td>
         <td class="px-5 py-5 border-b border-gray-200 bg-white text-center font-bold">${student.အဆောင်||''}</td>
       </tr>`;
     });
+
     html += `</tbody></table>`;
     tableContainer.innerHTML = html;
+
     renderPaginationControls();
 
-    document.querySelectorAll('.table-header th').forEach(th => {
-      th.addEventListener('click', handleSort);
-    });
+    document.querySelectorAll('.table-header th').forEach(th => th.addEventListener('click', handleSort));
     document.querySelectorAll('.student-name').forEach(el => {
       el.addEventListener('click', e => {
         const studentId = e.target.dataset.studentId;
@@ -557,7 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function filterStudents(){
+  function filterStudents() {
     const searchText = searchInput.value.toLowerCase().trim();
     const selectedClass = classFilter.value;
     const selectedCity = cityFilter.value;
@@ -569,7 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return nameMatch && classMatch;
     });
 
-    // Dynamically build city and hostel filters with counts from currently filtered students
+    // Populate city and hostel filters with counts according to filtered students
     const cities = filtered.map(s => s.မြို့).filter(Boolean);
     buildFilterOptionsWithCount(cityFilter, cities, 'မြို့ အားလုံး', selectedCity);
 
@@ -586,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTableAndPagination(filtered);
   }
 
-  function showStudentModal(student){
+  function showStudentModal(student) {
     document.getElementById('modal-student-name').textContent = student.နာမည် || 'အမည်မသိ';
     document.getElementById('modal-student-class').textContent = student.အတန်း || 'မရှိပါ';
     document.getElementById('modal-student-city').textContent = student.မြို့ || 'မရှိပါ';
@@ -595,13 +545,13 @@ document.addEventListener('DOMContentLoaded', () => {
     studentModal.style.display = 'block';
   }
 
-  function showMessageBox(message){
+  function showMessageBox(message) {
     messageBox.textContent = message;
     messageBox.classList.add('show');
     setTimeout(() => messageBox.classList.remove('show'), 3000);
   }
 
-  async function initializeApp(){
+  async function initializeApp() {
     tableContainer.innerHTML = `
       <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
         <div class="spinner mb-4"></div>
@@ -611,11 +561,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     students = [];
 
-    try{
-      for(let filePath of csvFilePaths){
+    try {
+      for(let filePath of csvFilePaths) {
         const absPath = new URL(filePath, window.location.href).href;
         const resp = await fetch(absPath);
-        if(!resp.ok){
+        if(!resp.ok) {
           console.warn(`Failed to fetch: ${absPath}`);
           continue;
         }
@@ -624,23 +574,32 @@ document.addEventListener('DOMContentLoaded', () => {
         students = students.concat(parsed);
       }
 
+      // Total student count marquee text - live scrolling
       totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော် အရေအတွက် ( ${convertToBurmeseNumerals(students.length)} ) ပါး ရှိပါသည်။`;
 
       populateAllFilters(students);
       filterStudents();
-    }catch(err){
-      console.error('Error loading CSV:', err);
+    } catch (err) {
+      console.error(err);
       totalStudentCountElement.textContent = 'အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားဖြစ်ပွားခဲ့သည်။';
-      tableContainer.innerHTML = `
-        <p class="text-center text-red-600 p-10 text-xl font-medium">
-          အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။
-        </p>`;
+      tableContainer.innerHTML = `<p class="text-center text-red-600 p-10 text-xl font-medium">အချက်အလက်များကို ခေါ်ယူရာတွင် အမှားတစ်ခုခုဖြစ်ပွားခဲ့သည်။ ကျေးဇူးပြု၍ ပြန်လည်စမ်းသပ်ပါ။</p>`;
       paginationControls.innerHTML = '';
     }
   }
 
-  // Event Listeners
-  searchInput.addEventListener('input', filterStudents);
+  // Search box clear button functionality
+  searchInput.addEventListener('input', () => {
+    clearSearchButton.style.display = searchInput.value.trim() ? 'flex' : 'none';
+    filterStudents();
+  });
+  clearSearchButton.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearchButton.style.display = 'none';
+    filterStudents();
+    searchInput.focus();
+  });
+
+  // Filters event listeners
   classFilter.addEventListener('change', () => {
     populateDependentFilters();
     filterStudents();
@@ -648,15 +607,15 @@ document.addEventListener('DOMContentLoaded', () => {
   cityFilter.addEventListener('change', filterStudents);
   hostelFilter.addEventListener('change', filterStudents);
 
+  // Modal close handlers
   modalCloseBtn.addEventListener('click', () => {
     studentModal.style.display = 'none';
   });
-  window.addEventListener('click', e => {
-    if(e.target === studentModal){
-      studentModal.style.display = 'none';
-    }
+  window.addEventListener('click', (e) => {
+    if(e.target === studentModal) studentModal.style.display = 'none';
   });
 
+  // Copy button copies only the table content text (excluding headers)
   copyPageButton.addEventListener('click', () => {
     const tbodyRows = document.querySelectorAll('#table-container table tbody tr');
     if(tbodyRows.length === 0){
@@ -671,10 +630,10 @@ document.addEventListener('DOMContentLoaded', () => {
     tempTextArea.value = textToCopy.trim();
     document.body.appendChild(tempTextArea);
     tempTextArea.select();
-    try{
+    try {
       const success = document.execCommand('copy');
       showMessageBox(success ? 'ဇယားအချက်အလက်ကို Copy ယူပြီးပါပြီ။' : 'Copy ယူ၍ မရပါ။');
-    }catch(err){
+    } catch (err) {
       console.error('Copy failed:', err);
       showMessageBox('Copy ယူ၍ မရပါ။ (Error)');
     }
