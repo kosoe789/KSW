@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ကောင်းဆုဝေ အင်္ဂလိပ်ဘာသာစကား သင်တန်းကျောင်း ကျောင်းသားစာရင်း</title>
 
-<!-- Pyidaungsu font -->
 <link href="https://cdn.jsdelivr.net/gh/pyidaungsu/font@1.0.5/pyidaungsu.css" rel="stylesheet" />
 
-<!-- Tailwind CSS -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -195,7 +193,7 @@
       class="w-20 h-20 md:w-24 md:h-24 ml-4 rounded-full shadow-md" />
   </div>
 
-  <p class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-8">
+  <p id="academicYearTitle" class="text-center text-lg md:text-xl text-purple-700 font-semibold mb-8">
     ၂၀၂၅ - ၂၀၂၆ ပညာသင်နှစ်
   </p>
 
@@ -221,7 +219,17 @@
       </button>
     </div>
 
-    <div class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-1">
+    <div class="flex flex-wrap gap-2 justify-center md:justify-end w-full md:flex-2">
+      <select
+        id="yearFilter"
+        class="px-4 py-2 border border-purple-300 font-bold bg-purple-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-purple-900"
+        aria-label="Filter by Academic Year"
+      >
+        <option value="2023">၂၀၂၃ ပညာသင်နှစ်</option>
+        <option value="2025" selected>၂၀၂၅ - ၂၀၂၆ ပညာသင်နှစ်</option>
+        <option value="2026">၂၀၂၆ - ၂၀၂၇ ပညာသင်နှစ်</option>
+      </select>
+
       <select
         id="classFilter"
         class="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-gray-800"
@@ -281,11 +289,15 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const csvFilePaths = ['Headmaster.csv','Teachers.csv','Level3.csv','Level2.csv', 'Level1A.csv', 'Level1B.csv', 'Volunteers.csv'];
+  // အခြေခံ CSV ဖိုင်နာမည်များ
+  const baseCsvFiles = ['Headmaster.csv','Teachers.csv','Level3.csv','Level2.csv', 'Level1A.csv', 'Level1B.csv', 'Volunteers.csv'];
+  
   const mainContainer = document.getElementById('mainContainer');
   const tableContainer = document.getElementById('table-container');
   const searchInput = document.getElementById('searchInput');
   const clearSearchButton = document.getElementById('clearSearchButton');
+  const yearFilter = document.getElementById('yearFilter');
+  const academicYearTitle = document.getElementById('academicYearTitle');
   const classFilter = document.getElementById('classFilter');
   const cityFilter = document.getElementById('cityFilter');
   const hostelFilter = document.getElementById('hostelFilter');
@@ -326,7 +338,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return data;
   }
 
-  // Builds dropdown options with counts, value is clean, text has count in Burmese
   function buildFilterOptionsWithCount(filterElement, items, allOptionText, selectedValue) {
     const countMap = {};
     items.forEach(item => {
@@ -519,7 +530,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return nameMatch && classMatch;
     });
 
-    // Populate city and hostel filters with counts according to filtered students
     const cities = filtered.map(s => s.မြို့).filter(Boolean);
     buildFilterOptionsWithCount(cityFilter, cities, 'မြို့ အားလုံး', selectedCity);
 
@@ -551,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => messageBox.classList.remove('show'), 3000);
   }
 
+  // ရွေးချယ်ထားသော နှစ်အလိုက် ဒေတာများကို ခေါ်ယူခြင်း
   async function initializeApp() {
     tableContainer.innerHTML = `
       <div class="flex flex-col justify-center items-center h-48 bg-white text-purple-700">
@@ -560,10 +571,20 @@ document.addEventListener('DOMContentLoaded', () => {
     paginationControls.innerHTML = '';
 
     students = [];
+    
+    // လက်ရှိရွေးထားတဲ့ နှစ်ကိုရယူပါ (ဥပမာ- '2023', '2025', '2026')
+    const selectedYear = yearFilter.value;
+    
+    // UI စာတန်းကို ပြောင်းလဲပေးခြင်း
+    const selectedYearText = yearFilter.options[yearFilter.selectedIndex].text;
+    academicYearTitle.textContent = selectedYearText;
 
     try {
-      for(let filePath of csvFilePaths) {
+      for(let fileName of baseCsvFiles) {
+        // Folder ပုံစံဖြင့် လမ်းကြောင်းသတ်မှတ်ခြင်း (e.g., '2023/Level1A.csv')
+        const filePath = `${selectedYear}/${fileName}`;
         const absPath = new URL(filePath, window.location.href).href;
+        
         const resp = await fetch(absPath);
         if(!resp.ok) {
           console.warn(`Failed to fetch: ${absPath}`);
@@ -574,9 +595,13 @@ document.addEventListener('DOMContentLoaded', () => {
         students = students.concat(parsed);
       }
 
-      // Total student count marquee text - live scrolling
       totalStudentCountElement.textContent = `စုစုပေါင်း သံဃာတော် အရေအတွက် ( ${convertToBurmeseNumerals(students.length)} ) ပါး ရှိပါသည်။`;
 
+      // Filter select များကို အသစ်ပြန်ပြင်ဆင်ခြင်း
+      classFilter.value = '';
+      cityFilter.value = '';
+      hostelFilter.value = '';
+      
       populateAllFilters(students);
       filterStudents();
     } catch (err) {
@@ -587,7 +612,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Search box clear button functionality
+  // နှစ်ပြောင်းလဲမှု စောင့်ကြည့်သည့် Event Listener အသစ်
+  yearFilter.addEventListener('change', () => {
+    searchInput.value = '';
+    clearSearchButton.style.display = 'none';
+    initializeApp();
+  });
+
   searchInput.addEventListener('input', () => {
     clearSearchButton.style.display = searchInput.value.trim() ? 'flex' : 'none';
     filterStudents();
@@ -599,7 +630,6 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.focus();
   });
 
-  // Filters event listeners
   classFilter.addEventListener('change', () => {
     populateDependentFilters();
     filterStudents();
@@ -607,7 +637,6 @@ document.addEventListener('DOMContentLoaded', () => {
   cityFilter.addEventListener('change', filterStudents);
   hostelFilter.addEventListener('change', filterStudents);
 
-  // Modal close handlers
   modalCloseBtn.addEventListener('click', () => {
     studentModal.style.display = 'none';
   });
@@ -615,7 +644,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(e.target === studentModal) studentModal.style.display = 'none';
   });
 
-  // Copy button copies only the table content text (excluding headers)
   copyPageButton.addEventListener('click', () => {
     const tbodyRows = document.querySelectorAll('#table-container table tbody tr');
     if(tbodyRows.length === 0){
@@ -645,8 +673,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
-
-
-
-
