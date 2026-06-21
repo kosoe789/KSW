@@ -121,13 +121,14 @@
   }
 
   /* Live scrolling banner styles */
+  /* စခရင်အကျယ်ဆုံးအထိ အပြည့်ပြေးနိုင်ရန် 100vw သို့ ပြောင်းလဲထားပါသည် */
   @keyframes marquee {
     0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    100% { transform: translateX(100vw); }
   }
   .animate-marquee {
-    animation: marquee 15s linear infinite;
-    animation-delay: 1s;
+    animation: marquee 20s linear infinite; /* စခရင်အဆုံးထိပြေးရသဖြင့် အရှိန်အနည်းငယ်အေးအောင် ၁၅ စက္ကန့်မှ ၂၀ စက္ကန့်သို့ တိုးထားပါသည် */
+    animation-delay: 0.5s;
   }
   #totalStudentCount {
     line-height: 2;
@@ -295,8 +296,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // နှစ်အလိုက် CSV ဖိုင်စာရင်း
-  // သတိပြုရန် - GitHub ပေါ်ရှိ ဖိုင်အမည် စာလုံးကြီး/သေးနှင့် ကွက်လပ် (Space) အတိအကျ တူရပါမည်။
   const csvFilesByYear = {
     "2023": ['Headmaster.csv', 'Teachers.csv', 'Level2A.csv', 'Level2B.csv', 'Level1A.csv', 'Level1B.csv','Volunteers.csv'],
     "2026": ['Headmaster.csv', 'Teachers.csv', 'Level3.csv', 'Level2.csv', 'Level1A.csv', 'Level1B.csv', 'Volunteers.csv'],
@@ -579,7 +578,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const csvFilePaths = csvFilesByYear[selectedYear] || csvFilesByYear["2025"];
 
-    // ဖိုင်တစ်ခုခုမတွေ့ခဲ့ရင် (ဥပမာ ၂၀၂၆ ထဲမှာ ဖိုင်အစုံမရှိသေးရင်) အမှားမတက်စေရန်
     let fetchPromises = csvFilePaths.map(async (fileName) => {
       const filePath = `${selectedYear}/${fileName}`;
       const absPath = new URL(filePath, window.location.href).href;
@@ -609,7 +607,6 @@ document.addEventListener('DOMContentLoaded', () => {
         populateAllFilters(students);
         filterStudents();
       } else {
-        // ဖိုင်လုံးဝမရှိသေးပါက ပြသရန်
         totalStudentCountElement.textContent = `ရွေးချယ်ထားသောနှစ်အတွက် အချက်အလက်များ မရှိသေးပါ။`;
         tableContainer.innerHTML = `<p class="text-center text-gray-600 p-10 text-xl font-medium">ဤနှစ်အတွက် ဒေတာဖိုင်များကို GitHub ပေါ်တွင် ရှာမတွေ့ပါ။ ဖိုင်လမ်းကြောင်း သို့မဟုတ် နာမည်များကို ပြန်စစ်ပေးပါ။</p>`;
       }
