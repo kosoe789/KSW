@@ -232,9 +232,10 @@
         class="px-4 py-2 border border-purple-300 font-bold bg-purple-50 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-300 text-purple-900"
         aria-label="Filter by Academic Year"
       >
-        <option value="2023">၂၀၂၄ ပညာသင်နှစ်</option>
-        <option value="2026" selected>၂၀၂၅ ပညာသင်နှစ်</option>
-        <option value="2025">၂၀၂၆ ပညာသင်နှစ်</option>
+        <option value="2024">၂၀၂၄ ပညာသင်နှစ်</option>
+        <option value="2025">၂၀၂၅ ပညာသင်နှစ်</option>
+        <option value="2026" selected>၂၀၂၆ ပညာသင်နှစ်</option>
+        
       </select>
 
       <select
@@ -297,9 +298,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const csvFilesByYear = {
-    "2023": ['Headmaster.csv', 'Teachers.csv', 'Level2A.csv', 'Level2B.csv', 'Level1A.csv', 'Level1B.csv','Volunteers.csv'],
-    "2026": ['Headmaster.csv', 'Teachers.csv', 'Level3.csv', 'Level2.csv', 'Level1A.csv', 'Level1B.csv', 'Volunteers.csv'],
-    "2025": ['Level1A.csv', 'Level1B.csv', 'Level2A.csv', 'Level2B.csv']
+    "2024": ['Headmaster.csv', 'Teachers.csv', 'Level2A.csv', 'Level2B.csv', 'Level1A.csv', 'Level1B.csv','Volunteers.csv'],
+    "2025": ['Headmaster.csv', 'Teachers.csv', 'Level3.csv', 'Level2.csv', 'Level1A.csv', 'Level1B.csv', 'Volunteers.csv'],
+    "2026": ['Headmaster.csv', 'Teachers.csv', 'Level2A.csv', 'Level2B.csv', 'Level1A.csv', 'Level1B.csv','Volunteers.csv']
+    
   };
   
   const mainContainer = document.getElementById('mainContainer');
